@@ -32,9 +32,9 @@ pipeline {
                 }
             }
         }
-        stage('Unit Tests'){
+        stage('Tests'){
             steps {
-                sh 'mvn test'
+                sh 'mvn -s settings.xml test'
             }
             post {
                 success {
@@ -47,12 +47,12 @@ pipeline {
         }
         stage('Tests'){
             steps {
-                sh 'mvn test'
+                sh 'mvn -s settings.xml test'
             }
         }
         stage('checkstyle analysis'){
             steps {
-                sh 'mvn checkstyle:checkstyle'
+                sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
         }
     }
