@@ -1,1 +1,9 @@
+# Build artifacts
 target/
+build/
+
+# Jenkins workspace and caches
+workspace/
+logs/
+caches/
+updates/
