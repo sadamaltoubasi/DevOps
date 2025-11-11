@@ -10,8 +10,7 @@
 - Spring Data JPA
 - Maven
 - JSP
-- Tomcat
-- MySQL
+- Tomcat 
 - Memcached
 - Rabbitmq
 - ElasticSearch
