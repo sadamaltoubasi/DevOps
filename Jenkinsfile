@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-         maven "MAVEN3.9"
-        jdk "JDK17"
+        maven 'MAVEN3.9'
+        jdk 'JDK17'
 
     }
     
@@ -21,7 +21,7 @@ pipeline {
     }
 
     stages {
-        stage('Build'){
+        stage('Build') {
             steps {
                 sh 'mvn -s settings.xml -DskipTests install'
             }
@@ -33,14 +33,14 @@ pipeline {
             }
         }
 
-        stage('Test'){
+        stage('Test') {
             steps {
                 sh 'mvn -s settings.xml test'
             }
 
         }
 
-        stage('Checkstyle Analysis'){
+        stage('Checkstyle Analysis') {
             steps {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
@@ -63,5 +63,17 @@ pipeline {
               }
             }
         }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        
     }
 }
