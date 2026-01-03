@@ -29,8 +29,8 @@
   <mirrors>
     <mirror>
       <id>nexus</id>
-      <name>Nexus Maven Group</name>
-      <url>http://172.31.28.230:8081/repository/vpro-maven-group/</url>
+      <name>Nexus Mirror</name>
+      <url>http://172.31.28.230:8081/repository/maven-public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>
