@@ -8,7 +8,7 @@ pipeline {
         maven "MAVEN3.9"
         jdk "JDK17"
     }
-    
+
     environment {
         SNAP_REPO = 'vprofile-snapshot'
 		NEXUS_USER = 'admin'
@@ -22,11 +22,10 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
         NEXUSPASS = credentials('nexuspass')
-
         ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
         AWS_S3_BUCKET = 'vprocicdbean82'
         AWS_EB_APP_NAME = 'vproapp'
-        AWS_EB_ENVIRONMENT = 'Vproapp-env'
+        AWS_EB_ENVIRONMENT = 'Vproapp-env-1'
         AWS_EB_APP_VERSION = "${BUILD_ID}"
     }
 
