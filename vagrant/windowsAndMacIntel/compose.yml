@@ -1,0 +1,72 @@
+services:
+  db01:
+    build: ./Docker-files/db
+    image: sadamaltoubasi/vprofiledb
+    container_name: db01
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./Docker-files/db/db_backup.sql:/docker-entrypoint-initdb.d/db_backup.sql
+    
+    environment:
+      - MYSQL_PASSWORD=admin123
+      - MYSQL_USER=admin
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_DATABASE=accounts        
+    networks:
+      - vprofile-net
+
+  mc01:
+    image: memcached:1.6-alpine
+    container_name: mc01
+    ports:
+      - "11211:11211"
+    networks:
+      - vprofile-net
+
+  rmq01:
+    image: rabbitmq:3-management-alpine
+    container_name: rmq01
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+       - RABBITMQ_DEFAULT_USER=test
+       - RABBITMQ_DEFAULT_PASS=test
+    networks:
+      - vprofile-net
+
+  app01:
+    build: ./Docker-files/app
+    image: sadamaltoubasi/vprofileapp
+    container_name: app01
+    ports:
+      - "8080:8080"
+    volumes:
+      - app_data:/usr/local/tomcat/webapps
+    depends_on:
+      - db01
+      - rmq01
+      - mc01
+    networks:
+      - vprofile-net
+
+  nginx01:
+    build: ./Docker-files/web
+    image: sadamaltoubasi/vprofileweb
+    container_name: nginx01
+    ports:
+      - "80:80"
+    depends_on:
+      - app01
+    networks:
+      - vprofile-net
+
+networks:
+  vprofile-net:
+    driver: bridge
+
+volumes:
+  db_data: {}
+  app_data: {}

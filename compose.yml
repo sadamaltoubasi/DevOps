@@ -1,0 +1,56 @@
+services:
+  db01:
+    build:
+      context: ./Docker-files/db
+    image: sadamaltoubasi/vprofiledb
+    container_name: db01
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+
+  mc01:
+    image: memcached:1.6-alpine
+    container_name: mc01
+    ports:
+      - "11211:11211"
+
+  
+  rmq01:
+    image: rabbitmq:3-management-alpine
+    container_name: rmq01
+    ports:
+      - "5672:5672"
+    environment:
+       - RABBITMQ_DEFAULT_USER=guest
+       - RABBITMQ_DEFAULT_PASS=guest
+
+  app01:
+    build:
+      context: ./Docker-files/app
+    image: sadamaltoubasi/vprofileapp
+    container_name: app01
+    ports:
+      - "8080:8080"
+    volumes:
+      - app_data:/usr/local/tomcat/webapps
+  
+  nginx01:
+    build:
+      context: ./Docker-files/web
+    image: sadamaltoubasi/vprofileweb
+    container_name: nginx01
+    ports:
+      - "80:80"
+    depends_on:
+      - app01
+  
+
+volumes:
+  db_data: {}
+  app_data: {}
+
+
+

@@ -5,7 +5,6 @@ RUN git clone https://github.com/sadamaltoubasi/vprofile-project.git .
 RUN mvn clean package -DskipTests 
 
 FROM tomcat:10-jdk17-openjdk-slim
-ENV CATALINA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED"
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
 
