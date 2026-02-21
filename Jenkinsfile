@@ -12,14 +12,14 @@ pipeline {
     }
     
     environment {
-        SNAP_REPO = 'vprofile-snapshot'
+        SNAP_REPO = 'sadam-snapshot'
 		NEXUS_USER = 'admin'
 		NEXUS_PASS = 'admin'
-		RELEASE_REPO = 'vprofile-release'
-		CENTRAL_REPO = 'vprofile-central'
+		RELEASE_REPO = 'sadam-release'
+		CENTRAL_REPO = 'sadam-central'
 		NEXUSIP = '172.31.23.92'
 		NEXUSPORT = '8081'
-		NEXUS_GRP_REPO = 'vprofile-maven-group'
+		NEXUS_GRP_REPO = 'sadam-group'
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
