@@ -6,7 +6,7 @@ def COLOR_MAP = [
 pipeline {
     agent any
     tools {
-        maven 'MAVEN3.9'
+        maven 'MAVEN3'
         jdk 'JDK17'
 
     }
