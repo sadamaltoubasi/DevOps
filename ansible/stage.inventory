@@ -1,2 +1,2 @@
 [appsrvgrp]
-vpro01stg.vprofile
+vpro01stg.vprofile ansible_user=ubuntu
