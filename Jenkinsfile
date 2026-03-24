@@ -113,7 +113,7 @@ pipeline {
 			        nexusip: "172.31.40.75",
 			        reponame: "vprofile-release",
 			        groupid: "QA",
-			        time: "${env.BUILD_TIMESTAMP.replaceAll(' ', '_')}",
+			        time: "${env.BUILD_TIMESTAMP}",
 			        build: "${env.BUILD_ID}",
                     artifactid: "vproapp",
 			        vprofile_version: "vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
