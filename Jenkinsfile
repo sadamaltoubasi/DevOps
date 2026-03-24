@@ -5,7 +5,7 @@ def COLOR_MAP = [
 pipeline {
     agent any
     tools {
-        maven "MAVEN3.9"
+        maven "MAVEN3"
         jdk "JDK17"
     }
     
@@ -15,7 +15,7 @@ pipeline {
 		NEXUS_PASS = 'admin123'
 		RELEASE_REPO = 'vprofile-release'
 		CENTRAL_REPO = 'vpro-maven-central'
-		NEXUSIP = '172.31.28.230'
+		NEXUSIP = '172.31.40.75'
 		NEXUSPORT = '8081'
 		NEXUS_GRP_REPO = 'vpro-maven-group'
         NEXUS_LOGIN = 'nexuslogin'
@@ -105,12 +105,12 @@ pipeline {
                 playbook    : 'ansible/site.yml',
                 installation: 'ansible',
                 colorized   : true,
-			    credentialsId: 'applogin',
+			    credentialsId: 'gitlogin',
 			    disableHostKeyChecking: true,
                 extraVars   : [
                    	USER: "admin",
                     PASS: "${NEXUSPASS}",
-			        nexusip: "172.31.28.230",
+			        nexusip: "172.31.40.75",
 			        reponame: "vprofile-release",
 			        groupid: "QA",
 			        time: "${env.BUILD_TIMESTAMP}",
