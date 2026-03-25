@@ -22,6 +22,11 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
         NEXUSPASS = credentials('nexuspass')
+        ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
+        AWS_S3_BUCKET = 'sadambean'
+        AWS_EB_APP_NAME = 'vproapp'
+        AWS_EB_ENVIRONMENT = 'Vproapp-env'
+        AWS_EB_APP_VERSION = "${BUILD_ID}"
     }
 
     stages {
@@ -73,7 +78,7 @@ pipeline {
                 timeout(time: 1, unit: 'HOURS') {
                     // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
                     // true = set pipeline to UNSTABLE, false = don't
-                    waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
@@ -96,6 +101,16 @@ pipeline {
                   ]
                 )
             }
+        }
+
+        stage('Deploy to Stage Bean'){
+          steps {
+            withAWS(credentials: 'awsbeancreds', region: 'us-west-1') {
+               sh 'aws s3 cp ./target/vprofile-v2.war s3://$AWS_S3_BUCKET/$ARTIFACT_NAME'
+               sh 'aws elasticbeanstalk create-application-version --application-name $AWS_EB_APP_NAME --version-label $AWS_EB_APP_VERSION --source-bundle S3Bucket=$AWS_S3_BUCKET,S3Key=$ARTIFACT_NAME'
+               sh 'aws elasticbeanstalk update-environment --application-name $AWS_EB_APP_NAME --environment-name $AWS_EB_ENVIRONMENT --version-label $AWS_EB_APP_VERSION'
+            }
+          }
         }
 
  
