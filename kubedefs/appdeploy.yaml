@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - name: vproapp-port
-          containerPort: 8080
+          containerPort: 80
       initContainers:
       - name: init-mydb
         image: busybox
