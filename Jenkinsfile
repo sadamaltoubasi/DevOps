@@ -102,7 +102,7 @@ pipeline {
         stage('DEPLOY TO KUBERNETES') {
             agent {label 'KOPS'}
             steps {
-                sh "helm upgrade --install vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod --create-namespace"
+                sh "helm upgrade --install vprofile-stack helm/sadamchart --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod --create-namespace"
             }
         }
 
