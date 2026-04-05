@@ -16,11 +16,11 @@ spec:
     spec:
       containers:
       - name: vproapp
-        image: {{ .Values.appimage}}
+        image: sadamaltoubasi/app01:latest
         imagePullPolicy: Always
         ports:
         - name: vproapp-port
-          containerPort: 80
+          containerPort: 8080
       initContainers:
       - name: init-mydb
         image: busybox
