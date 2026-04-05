@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: vproapp
-        image: sadamaltoubasi/app01:latest
+        image: {{ .Values.appimage}}
         imagePullPolicy: Always
         ports:
         - name: vproapp-port
