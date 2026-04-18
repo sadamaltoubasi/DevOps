@@ -23,7 +23,10 @@ pipeline {
         SONARSCANNER = 'sonarscanner'
         registryCredential = 'ecr:us-east-1:awsbeancreds'
         appRegistry = '579275327561.dkr.ecr.us-east-1.amazonaws.com/vprofileapp'
+        dbRegistry  = '579275327561.dkr.ecr.us-east-1.amazonaws.com/vpro-db'
+
         vprofileapp = 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
+        vprofiledb  = 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
         cluster = "vproappstaging"
         service = "vproapptask-service-bhx5txsn"
 
@@ -110,6 +113,28 @@ pipeline {
                      type: 'war']
                   ]
                 )
+            }
+        }
+
+
+        stage ("Build DB Image") {
+            steps {
+                script {
+
+                dockerImage = docker.build(dbRegistry + ":$BUILD_NUMBER", "./Docker-files/db/")
+                }
+            } 
+    
+        }
+
+        stage ('Upload App Image') {
+            steps{
+                script {
+                    docker.withRegistry(vprofiledb, registryCredential) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
+                    }
+                }
             }
         }
 
