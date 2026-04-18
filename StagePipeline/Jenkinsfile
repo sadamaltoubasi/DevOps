@@ -25,7 +25,7 @@ pipeline {
         appRegistry = '579275327561.dkr.ecr.us-east-1.amazonaws.com/vprofileapp'
         vprofileapp = 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
         cluster = "vproappstaging"
-        service = "vproapptask-service-2h0leway"
+        service = "vproapptask-service-bhx5txsn"
 
 
     }
@@ -136,7 +136,7 @@ pipeline {
 
         stage ('Deploy to Staging ECS') {
             steps{
-                withAWS(credentials: 'awscreds', region: 'us-east-1'){
+                withAWS(credentials: 'awsbeancreds', region: 'us-east-1'){
                     sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
                 }
             }
