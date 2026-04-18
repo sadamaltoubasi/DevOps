@@ -30,6 +30,8 @@ pipeline {
         service = "vproapptask-service-bhx5txsn"
         dbservice = "vproapptask-service-quomlyt0"
 
+        dbservice1 = 'vproapptask-service-0l70fcq7'
+
 
     }
 
@@ -162,7 +164,7 @@ pipeline {
         stage ('Deploy to Staging ECS') {
             steps{
                 withAWS(credentials: 'awsbeancreds', region: 'us-east-1'){
-                    sh 'aws ecs update-service --cluster ${cluster} --service ${dbservice} --force-new-deployment'
+                    sh 'aws ecs update-service --cluster ${cluster} --service ${dbservice1} --force-new-deployment'
                 }
             }
         }
