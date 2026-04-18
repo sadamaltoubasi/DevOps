@@ -127,7 +127,7 @@ pipeline {
     
         }
 
-        stage ('Upload App Image') {
+        stage ('Upload DB Image') {
             steps{
                 script {
                     docker.withRegistry(vprofiledb, registryCredential) {
