@@ -164,15 +164,13 @@ pipeline {
             steps{
                 withAWS(credentials: 'awsbeancreds', region: 'us-east-1'){
                     sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
-                    sh "aws ecs update-service --cluster ${cluster} --service ${dbservice} --force-new-deployment"
+                    sh 'aws ecs update-service --cluster ${cluster} --service ${dbservice} --force-new-deployment'
                 }
             }
         }
     }
 
-    }
-
-
+    
 post {
         always {
             echo 'Slack Notifications.'
