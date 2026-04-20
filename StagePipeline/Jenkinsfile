@@ -24,6 +24,7 @@ pipeline {
         registryCredential = 'ecr:us-east-1:awsbeancreds'
         appRegistry = '579275327561.dkr.ecr.us-east-1.amazonaws.com/vprofileapp'
         dbRegistry  = '579275327561.dkr.ecr.us-east-1.amazonaws.com/db01'
+        rmqRegistry = '579275327561.dkr.ecr.us-east-1.amazonaws.com/rmq01'
 
         vprofileup  = 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
 
@@ -121,7 +122,7 @@ pipeline {
             steps {
                 script {
 
-                dockerImage = docker.build(dbRegistry + ":$BUILD_NUMBER", "./Docker-files/rmq/")
+                dockerImage = docker.build(rmqRegistry + ":$BUILD_NUMBER", "./Docker-files/rmq/")
                 }
             } 
     
