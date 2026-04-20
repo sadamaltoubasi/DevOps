@@ -117,6 +117,29 @@ pipeline {
         }
 
 
+        stage ("Build RMQ Image") {
+            steps {
+                script {
+
+                dockerImage = docker.build(dbRegistry + ":$BUILD_NUMBER", "./Docker-files/rmq/")
+                }
+            } 
+    
+        }
+
+        stage ('Upload RMQ Image') {
+            steps{
+                script {
+                    docker.withRegistry(vprofileup, registryCredential) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+
+
+
         stage ("Build DB Image") {
             steps {
                 script {
