@@ -2,7 +2,7 @@ FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 RUN apk add --no-cache git
 WORKDIR /app
 RUN git clone https://github.com/sadamaltoubasi/vprofile-project.git .
-RUN git checkout kubeapp
+RUN git checkout docker
 RUN mvn clean package -DskipTests 
 
 FROM tomcat:10-jdk17-openjdk-slim

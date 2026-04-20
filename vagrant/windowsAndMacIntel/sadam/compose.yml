@@ -3,11 +3,13 @@ services:
     build: 
       context: ./Docker-files/db
     container_name: db01
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     
     environment:
-      - MYSQL_ROOT_PASSWORD=vprodbpass
+      - MYSQL_ROOT_PASSWORD=admin123
       - MYSQL_DATABASE=accounts        
     networks:
       - vprofile-net
@@ -15,6 +17,8 @@ services:
   mc01:
     image: memcached:1.6-alpine
     container_name: mc01
+    ports:
+      - "11211:11211"
     networks:
       - vprofile-net
 
@@ -22,10 +26,11 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rmq01
     ports:
+      - "5672:5672"
       - "15672:15672"
     environment:
-       - RABBITMQ_DEFAULT_USER=guest
-       - RABBITMQ_DEFAULT_PASS=guest
+       - RABBITMQ_DEFAULT_USER=test
+       - RABBITMQ_DEFAULT_PASS=test
     networks:
       - vprofile-net
 
@@ -33,10 +38,10 @@ services:
     build: 
       context: ./Docker-files/app
     container_name: app01
+    ports:
+      - "8080:8080"
     volumes:
       - app_data:/usr/local/tomcat/webapps
-    ports: 
-      - "8080:8080"
     depends_on:
       - db01
       - rmq01
@@ -57,6 +62,7 @@ services:
 
 networks:
   vprofile-net:
+    driver: bridge
 
 volumes:
   db_data: {}
