@@ -28,7 +28,7 @@ pipeline {
         vprofileup  = 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
 
         cluster = "vproappstaging"
-        service = "vproapptask-service-ha6v7560"
+        service = "vproapptask-service-dn95mppl"
 
 
     }
