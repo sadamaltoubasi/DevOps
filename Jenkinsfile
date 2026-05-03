@@ -25,8 +25,13 @@ pipeline {
         ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
         AWS_S3_BUCKET = 'sadambean'
         AWS_EB_APP_NAME = 'vproapp'
-        AWS_EB_ENVIRONMENT = 'Vproapp-env'
+        AWS_EB_ENVIRONMENT = 'Vproapp-env-1'
         AWS_EB_APP_VERSION = "${BUILD_ID}"
+
+        AWS_ACCOUNT_ID = '579275327561'
+        ECR_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
+        DB_IMAGE = "${ECR_URL}/db01"
+        APP_IMAGE = "${ECR_URL}/app01"
     }
 
     stages {
@@ -83,47 +88,47 @@ pipeline {
             }
         }
 
-        stage("UploadArtifact"){
-            steps{
-                nexusArtifactUploader(
-                  nexusVersion: 'nexus3',
-                  protocol: 'http',
-                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                  groupId: 'QA',
-                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                  repository: "${RELEASE_REPO}",
-                  credentialsId: "${NEXUS_LOGIN}",
-                  artifacts: [
-                    [artifactId: 'vproapp',
-                     classifier: '',
-                     file: 'target/vprofile-v2.war',
-                     type: 'war']
-                  ]
-                )
-            }
-        }
 
-
-        stage('Upload Artifact to S3 Bucket'){
-          steps {
+stage('Docker Build & Push to ECR') {
+    steps {
+        script {
             withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
-               sh 'aws s3 cp ./target/vprofile-v2.war s3://$AWS_S3_BUCKET/$ARTIFACT_NAME'
-              
+                // 1. تسجيل الدخول لـ ECR
+                sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_URL}"
+                
+                // 2. معالجة صورة قاعدة البيانات (DB)
+                // بناء الصورة بالوسم الجديد
+                sh "docker build -t ${DB_IMAGE}:${BUILD_ID} ./db"
+                // إعطاء الصورة وسم latest إضافي
+                sh "docker tag ${DB_IMAGE}:${BUILD_ID} ${DB_IMAGE}:latest"
+                // دفع النسختين (الرقم و latest)
+                sh "docker push ${DB_IMAGE}:${BUILD_ID}"
+                sh "docker push ${DB_IMAGE}:latest"
+                
+                // 3. معالجة صورة التطبيق (App)
+                sh "docker build -t ${APP_IMAGE}:${BUILD_ID} ."
+                sh "docker tag ${APP_IMAGE}:${BUILD_ID} ${APP_IMAGE}:latest"
+                sh "docker push ${APP_IMAGE}:${BUILD_ID}"
+                sh "docker push ${APP_IMAGE}:latest"
             }
-          }
         }
+    }
+}
 
-
-        stage('Deploy to Stage Bean'){
-          steps {
-            withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
-               sh 'aws elasticbeanstalk create-application-version --application-name $AWS_EB_APP_NAME --version-label $AWS_EB_APP_VERSION --source-bundle S3Bucket=$AWS_S3_BUCKET,S3Key=$ARTIFACT_NAME'
-               sh 'aws elasticbeanstalk update-environment --application-name $AWS_EB_APP_NAME --environment-name $AWS_EB_ENVIRONMENT --version-label $AWS_EB_APP_VERSION'
-            }
-          }
+stage('Deploy to Stage Bean'){
+    steps {
+        withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
+            // 1. رفع ملف الـ JSON كما هو (لأننا نعتمد على latest بالداخل)
+            sh "aws s3 cp Dockerrun.aws.json s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.json"
+            
+            // 2. إنشاء نسخة التطبيق في Beanstalk
+            sh "aws elasticbeanstalk create-application-version --application-name ${AWS_EB_APP_NAME} --version-label ${AWS_EB_APP_VERSION} --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=vpro-v${BUILD_ID}.json"
+            
+            // 3. تحديث البيئة لسحب الصور الجديدة بـ Tag الـ latest
+            sh "aws elasticbeanstalk update-environment --application-name ${AWS_EB_APP_NAME} --environment-name ${AWS_EB_ENVIRONMENT} --version-label ${AWS_EB_APP_VERSION}"
         }
-
- 
+    }
+}
 
     }
     post {
