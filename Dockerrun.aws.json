@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "db01",
-      "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/db-bean:latest",
+      "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
@@ -11,7 +11,7 @@
       ]
     },
     {
-      "name": "app01",
+      "name": "app-bean",
       "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest",
       "essential": true,
       "memory": 512,

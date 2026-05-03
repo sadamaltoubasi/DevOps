@@ -31,7 +31,7 @@ pipeline {
         AWS_ACCOUNT_ID = '579275327561'
         ECR_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
         DB_IMAGE = "${ECR_URL}/db01"
-        APP_IMAGE = "${ECR_URL}/app01"
+        APP_IMAGE = "${ECR_URL}/app-bean"
     }
 
     stages {
