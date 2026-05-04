@@ -1,6 +1,6 @@
 services:
   db01:
-    image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest
+    image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest
     container_name: db01
     ports:
       - "3306:3306"  # منفذ MySQL الرئيسي
