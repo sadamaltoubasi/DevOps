@@ -1,9 +1,11 @@
+
 services:
   db01:
-    image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest
+    image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest
     container_name: db01
-    ports:
-      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
     environment:
       - MYSQL_ROOT_PASSWORD=admin123
       - MYSQL_USER=admin
@@ -15,8 +17,6 @@ services:
   mc01:
     image: memcached:1.6-alpine
     container_name: mc01
-    ports:
-      - "11211:11211"
     networks:
       - vprofile-net
 
@@ -24,19 +24,26 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rmq01
     ports:
-      - "5672:5672"
       - "15672:15672"
+      - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=test
-      - RABBITMQ_DEFAULT_PASS=test
+       - RABBITMQ_DEFAULT_USER=test
+       - RABBITMQ_DEFAULT_PASS=test
     networks:
       - vprofile-net
 
   app01:
     image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest
     container_name: app01
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin123
+      - MYSQL_DATABASE=accounts
+    volumes:
+      - app_data:/usr/local/tomcat/webapps
     ports:
-      - "80:8080" # لكي يفتح التطبيق مباشرة على منفذ الويب
+      - "8081:8080"
     depends_on:
       - db01
       - rmq01
@@ -46,3 +53,8 @@ services:
 
 networks:
   vprofile-net:
+
+volumes:
+  db_data: {}
+  app_data: {}
+
