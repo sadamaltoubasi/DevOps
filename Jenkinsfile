@@ -24,8 +24,8 @@ pipeline {
         NEXUSPASS = credentials('nexuspass')
         ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
         AWS_S3_BUCKET = 'sadambean'
-        AWS_EB_APP_NAME = 'vproapp'
-        AWS_EB_ENVIRONMENT = 'Vproapp-env'
+        AWS_EB_APP_NAME = 'vproapp-1'
+        AWS_EB_ENVIRONMENT = 'Vproapp-1-env '
         AWS_EB_APP_VERSION = "${BUILD_ID}"
 
         AWS_ACCOUNT_ID = '579275327561'
