@@ -2,6 +2,8 @@ services:
   db01:
     image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest
     container_name: db01
+    ports:
+      - "3306:3306"  # منفذ MySQL الرئيسي
     volumes:
       - db_data:/var/lib/mysql
     environment:
@@ -15,12 +17,17 @@ services:
   mc01:
     image: memcached:1.6-alpine
     container_name: mc01
+    ports:
+      - "11211:11211"  # منفذ Memcached الرئيسي
     networks:
       - vprofile-net
 
   rmq01:
     image: rabbitmq:3-management-alpine
     container_name: rmq01
+    ports:
+      - "5672:5672"  # منفذ RabbitMQ الرئيسي
+      - "15672:15672"  # منفذ واجهة الإدارة (يمكن إزالته في بيئة الإنتاج)
     # في Beanstalk، يفضل عدم فتح منافذ الإدارة خارجياً إلا للضرورة
     environment:
        - RABBITMQ_DEFAULT_USER=test
