@@ -106,7 +106,7 @@ stage('Docker Build & Push to ECR') {
                 sh "docker push ${DB_IMAGE}:latest"
                 
                 // 3. معالجة صورة التطبيق (App)
-                sh "docker build -t ${APP_IMAGE}:${BUILD_ID} ."
+                sh "docker build -t ${APP_IMAGE}:${BUILD_ID} ./app"
                 sh "docker tag ${APP_IMAGE}:${BUILD_ID} ${APP_IMAGE}:latest"
                 sh "docker push ${APP_IMAGE}:${BUILD_ID}"
                 sh "docker push ${APP_IMAGE}:latest"
@@ -119,12 +119,12 @@ stage('Deploy to Stage Bean'){
     steps {
         withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
             // 1. رفع ملف الـ JSON كما هو (لأننا نعتمد على latest بالداخل)
-            sh "aws s3 cp Dockerrun.aws.json s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.json"
+            sh "aws s3 cp ./compose.yml s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.yml"
             
-            // 2. إنشاء نسخة التطبيق في Beanstalk
-            sh "aws elasticbeanstalk create-application-version --application-name ${AWS_EB_APP_NAME} --version-label ${AWS_EB_APP_VERSION} --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=vpro-v${BUILD_ID}.json"
-            
-            // 3. تحديث البيئة لسحب الصور الجديدة بـ Tag الـ latest
+    
+            // تحديث أمر إنشاء نسخة التطبيق ليشير لملف الـ YAML
+            sh "aws elasticbeanstalk create-application-version --application-name ${AWS_EB_APP_NAME} --version-label ${AWS_EB_APP_VERSION} --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=vpro-v${BUILD_ID}.yml"
+
             sh "aws elasticbeanstalk update-environment --application-name ${AWS_EB_APP_NAME} --environment-name ${AWS_EB_ENVIRONMENT} --version-label ${AWS_EB_APP_VERSION}"
         }
     }
