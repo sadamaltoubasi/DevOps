@@ -1,6 +1,9 @@
 services:
   db01:
     image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest
+    container_name: db01
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=admin123
       - MYSQL_USER=admin
@@ -11,11 +14,18 @@ services:
 
   mc01:
     image: memcached:1.6-alpine
+    container_name: mc01
+    ports:
+      - "11211:11211"
     networks:
       - vprofile-net
 
   rmq01:
     image: rabbitmq:3-management-alpine
+    container_name: rmq01
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=test
       - RABBITMQ_DEFAULT_PASS=test
@@ -24,6 +34,7 @@ services:
 
   app01:
     image: 579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest
+    container_name: app01
     ports:
       - "80:8080" # لكي يفتح التطبيق مباشرة على منفذ الويب
     depends_on:
