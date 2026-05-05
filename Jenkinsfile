@@ -25,7 +25,7 @@ pipeline {
         ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
         AWS_S3_BUCKET = 'sadambean'
         AWS_EB_APP_NAME = 'vproapp-1'
-        AWS_EB_ENVIRONMENT = 'Vproapp-1-env '
+        AWS_EB_ENVIRONMENT = 'Vproapp-1-env'
         AWS_EB_APP_VERSION = "${BUILD_ID}"
 
         AWS_ACCOUNT_ID = '579275327561'
@@ -117,21 +117,21 @@ stage('Docker Build & Push to ECR') {
 stage('Deploy to Stage Bean'){
     steps {
         withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
-            // 1. استخدام امتداد .json ليتوافق مع محرك ECS الذي اخترته
-            def s3Key = "vpro-v${BUILD_ID}.json"
-            
-            sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/${s3Key}"
-            
-            // 2. تحديث نسخة التطبيق باستخدام الـ Key الصحيح
-            sh """
-                aws elasticbeanstalk create-application-version \
-                --application-name ${AWS_EB_APP_NAME} \
-                --version-label ${AWS_EB_APP_VERSION} \
-                --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=${s3Key}
-            """
+            // حل المشكلة: نضع المتغير داخل بلوك script
+            script {
+                def s3Key = "vpro-v${BUILD_ID}.json"
+                
+                sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/${s3Key}"
+                
+                sh """
+                    aws elasticbeanstalk create-application-version \
+                    --application-name ${AWS_EB_APP_NAME} \
+                    --version-label ${AWS_EB_APP_VERSION} \
+                    --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=${s3Key}
+                """
 
-            // 3. تحديث البيئة
-            sh "aws elasticbeanstalk update-environment --application-name ${AWS_EB_APP_NAME} --environment-name ${AWS_EB_ENVIRONMENT} --version-label ${AWS_EB_APP_VERSION}"
+                sh "aws elasticbeanstalk update-environment --application-name ${AWS_EB_APP_NAME} --environment-name ${AWS_EB_ENVIRONMENT} --version-label ${AWS_EB_APP_VERSION}"
+            }
         }
     }
 }
