@@ -119,7 +119,7 @@ stage('Deploy to Stage Bean'){
     steps {
         withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
             // 1. رفع ملف الـ JSON كما هو (لأننا نعتمد على latest بالداخل)
-            sh "aws s3 cp ./compose.yml s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.yml"
+            sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.yml"
             
     
             // تحديث أمر إنشاء نسخة التطبيق ليشير لملف الـ YAML

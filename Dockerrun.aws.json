@@ -1,0 +1,108 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "db-data",
+      "host": {
+        "sourcePath": "/var/lib/mysql"
+      }
+    },
+    {
+      "name": "app-data",
+      "host": {
+        "sourcePath": "/usr/local/tomcat/webapps"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "db01",
+      "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 3306,
+          "containerPort": 3306
+        }
+      ],
+      "environment": [
+        {
+          "name": "MYSQL_ROOT_PASSWORD",
+          "value": "admin123"
+        },
+        {
+          "name": "MYSQL_DATABASE",
+          "value": "accounts"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "db-data",
+          "containerPath": "/var/lib/mysql"
+        }
+      ]
+    },
+    {
+      "name": "mc01",
+      "image": "memcached:1.6-alpine",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 11211,
+          "containerPort": 11211
+        }
+      ]
+    },
+    {
+      "name": "rmq01",
+      "image": "rabbitmq:3-management-alpine",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        {
+          "hostPort": 5672,
+          "containerPort": 5672
+        },
+        {
+          "hostPort": 15672,
+          "containerPort": 15672
+        }
+      ],
+      "environment": [
+        {
+          "name": "RABBITMQ_DEFAULT_USER",
+          "value": "test"
+        },
+        {
+          "name": "RABBITMQ_DEFAULT_PASS",
+          "value": "test"
+        }
+      ]
+    },
+    {
+      "name": "app01",
+      "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ],
+      "links": [
+        "db01",
+        "rmq01",
+        "mc01"
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "app-data",
+          "containerPath": "/usr/local/tomcat/webapps"
+        }
+      ]
+    }
+  ]
+}
