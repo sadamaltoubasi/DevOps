@@ -97,7 +97,7 @@
         "rmq01",
         "mc01"
       ],
-      "mountPoints": [
+      "volumes": [
         {
           "sourceVolume": "app-data",
           "containerPath": "/usr/local/tomcat/webapps"
