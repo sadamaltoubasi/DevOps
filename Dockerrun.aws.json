@@ -6,12 +6,6 @@
       "host": {
         "sourcePath": "/var/lib/mysql"
       }
-    },
-    {
-      "name": "app-data",
-      "host": {
-        "sourcePath": "/usr/local/tomcat/webapps"
-      }
     }
   ],
   "containerDefinitions": [
@@ -96,12 +90,6 @@
         "db01",
         "rmq01",
         "mc01"
-      ],
-      "volumes": [
-        {
-          "sourceVolume": "app-data",
-          "containerPath": "/usr/local/tomcat/webapps"
-        }
       ]
     }
   ]
