@@ -13,6 +13,7 @@
       "name": "db01",
       "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest",
       "essential": true,
+      "memory": 256,
       "portMappings": [
         {
           "hostPort": 3306,
@@ -49,6 +50,7 @@
       "name": "mc01",
       "image": "memcached:1.6-alpine",
       "essential": true,
+      "memory": 256,
       "portMappings": [
         {
           "hostPort": 11211,
@@ -60,6 +62,7 @@
       "name": "rmq01",
       "image": "rabbitmq:3-management-alpine",
       "essential": true,
+      "memory": 256,
       "portMappings": [
         {
           "hostPort": 5672,
@@ -85,6 +88,7 @@
       "name": "app01",
       "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/app-bean:latest",
       "essential": true,
+      "memory": 512,
       "portMappings": [
         {
           "hostPort": 80,
