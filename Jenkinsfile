@@ -114,17 +114,23 @@ stage('Docker Build & Push to ECR') {
         }
     }
 }
-
 stage('Deploy to Stage Bean'){
     steps {
         withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
-            // 1. رفع ملف الـ JSON كما هو (لأننا نعتمد على latest بالداخل)
-            sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/vpro-v${BUILD_ID}.yml"
+            // 1. استخدام امتداد .json ليتوافق مع محرك ECS الذي اخترته
+            def s3Key = "vpro-v${BUILD_ID}.json"
             
-    
-            // تحديث أمر إنشاء نسخة التطبيق ليشير لملف الـ YAML
-            sh "aws elasticbeanstalk create-application-version --application-name ${AWS_EB_APP_NAME} --version-label ${AWS_EB_APP_VERSION} --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=vpro-v${BUILD_ID}.yml"
+            sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/${s3Key}"
+            
+            // 2. تحديث نسخة التطبيق باستخدام الـ Key الصحيح
+            sh """
+                aws elasticbeanstalk create-application-version \
+                --application-name ${AWS_EB_APP_NAME} \
+                --version-label ${AWS_EB_APP_VERSION} \
+                --source-bundle S3Bucket=${AWS_S3_BUCKET},S3Key=${s3Key}
+            """
 
+            // 3. تحديث البيئة
             sh "aws elasticbeanstalk update-environment --application-name ${AWS_EB_APP_NAME} --environment-name ${AWS_EB_ENVIRONMENT} --version-label ${AWS_EB_APP_VERSION}"
         }
     }
