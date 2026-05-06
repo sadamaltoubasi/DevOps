@@ -13,7 +13,7 @@
       "name": "db01",
       "image": "579275327561.dkr.ecr.us-east-1.amazonaws.com/db01:latest",
       "essential": true,
-      "memory": 512,
+      "memory": 1024,
       "portMappings": [
         {
           "hostPort": 3306,
