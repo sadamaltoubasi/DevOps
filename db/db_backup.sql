@@ -42,14 +42,6 @@ UNLOCK TABLES;
 --
 -- Table structure for table `user`
 --
-CREATE DATABASE IF NOT EXISTS accounts;
-USE accounts;
-
--- إنشاء المستخدم ومنحه صلاحية الوصول من أي مكان (%)
--- ملاحظة: استبدل 'admin' و 'admin123' بما يطابق الإعدادات في Dockerrun.aws.json
-CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'admin123';
-GRANT ALL PRIVILEGES ON accounts.* TO 'admin'@'%';
-FLUSH PRIVILEGES;
 
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
