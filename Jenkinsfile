@@ -25,7 +25,7 @@ pipeline {
         ARTIFACT_NAME = "vprofile-v${BUILD_ID}.war"
         AWS_S3_BUCKET = 'sadambean'
         AWS_EB_APP_NAME = 'vproapp'
-        AWS_EB_ENVIRONMENT = 'Vproapp-env-1'
+        AWS_EB_ENVIRONMENT = 'Vproapp-env-2'
         AWS_EB_APP_VERSION = "${BUILD_ID}"
 
         AWS_ACCOUNT_ID = '579275327561'
@@ -89,15 +89,39 @@ pipeline {
         }
 
 
+stage('Docker Build & Push to ECR') {
+    steps {
+        script {
+            withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
+                // 1. تسجيل الدخول لـ ECR
+                sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_URL}"
+                
+                // 2. معالجة صورة قاعدة البيانات (DB)
+                // بناء الصورة بالوسم الجديد
+                sh "docker build -t ${DB_IMAGE}:${BUILD_ID} ./db"
+                // إعطاء الصورة وسم latest إضافي
+                sh "docker tag ${DB_IMAGE}:${BUILD_ID} ${DB_IMAGE}:latest"
+                // دفع النسختين (الرقم و latest)
+                sh "docker push ${DB_IMAGE}:${BUILD_ID}"
+                sh "docker push ${DB_IMAGE}:latest"
+                
+                // 3. معالجة صورة التطبيق (App)
+                sh "docker build -t ${APP_IMAGE}:${BUILD_ID} ./app"
+                sh "docker tag ${APP_IMAGE}:${BUILD_ID} ${APP_IMAGE}:latest"
+                sh "docker push ${APP_IMAGE}:${BUILD_ID}"
+                sh "docker push ${APP_IMAGE}:latest"
+            }
+        }
+    }
+}
 stage('Deploy to Stage Bean'){
     steps {
         withAWS(credentials: 'awsbeancreds', region: 'us-east-1') {
             // حل المشكلة: نضع المتغير داخل بلوك script
             script {
-                def AWS_EB_APP_VERSION = "vpro-${BUILD_ID}"
-                def s3Key = "vpro-v${BUILD_ID}.war"
+                def s3Key = "vpro-v${BUILD_ID}.json"
                 
-                sh "aws s3 cp ./target/vprofile-v2.war s3://${AWS_S3_BUCKET}/${s3Key}"
+                sh "aws s3 cp ./Dockerrun.aws.json s3://${AWS_S3_BUCKET}/${s3Key}"
                 
                 sh """
                     aws elasticbeanstalk create-application-version \
