@@ -300,7 +300,7 @@
       <repository>
         <id>codeartifact</id>
         <name>codeartifact</name>
-    <url>yourdomain---------------------------/</url>
+    <url>https://vpro-maven-579275327561.d.codeartifact.us-east-1.amazonaws.com/maven/maven-central-store/</url>
       </repository>
     </repositories>
 </project>
