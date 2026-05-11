@@ -12,7 +12,7 @@ phases:
     commands:
       # لم نعد بحاجة لتحميل Java أو Maven أو Sonar.. كلها موجودة داخل الصورة
       - cp ./settings.xml /root/.m2/settings.xml
-      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text)
+      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text`
 
   build:
     commands:
