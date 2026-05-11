@@ -6,8 +6,10 @@ phases:
   install:
     commands:
       - cp ./settings.xml /root/.m2/settings.xml
-      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain ArtifactDomain --domain-owner ID --region REGION --query authorizationToken --output text`
-  pre_build:
+      # الحصول على التوكن والتأكد من نجاح العملية
+      - TOKEN=$(aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text)
+      - if [ -z "$TOKEN" ]; then echo "Failed to fetch token"; exit 1; fi
+      - export CODEARTIFACT_AUTH_TOKEN=$TOKEN  pre_build:
     commands:
       - apt-get update
       - apt-get install -y jq 
