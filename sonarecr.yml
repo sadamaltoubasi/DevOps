@@ -10,7 +10,6 @@ env:
 phases:
   install:
     commands:
-      - mkdir -p /root/.m2
       # الحصول على التوكن والتأكد من نجاح العملية
       - TOKEN=$(aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text)
       - if [ -z "$TOKEN" ]; then echo "Failed to fetch token"; exit 1; fi
@@ -21,16 +20,16 @@ phases:
   build:
     commands:
       - echo "Starting Build and Analysis..."
-      - mvn test
+      - mvn test -X
       - mvn checkstyle:checkstyle
-      - mvn sonar:sonar \
-          -Dsonar.login=$LOGIN \
-          -Dsonar.host.url=$HOST \
-          -Dsonar.projectKey=$Project \
-          -Dsonar.organization=$Organization \
-          -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-          -Dsonar.junit.reportsPath=target/surefire-reports/ \
-          -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+      - mvn sonar:sonar
+          -Dsonar.login=$LOGIN
+          -Dsonar.host.url=$HOST
+          -Dsonar.projectKey=$Project
+          -Dsonar.organization=$Organization
+          -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/
+          -Dsonar.junit.reportsPath=target/surefire-reports/
+          -Dsonar.jacoco.reportsPath=target/jacoco.exec
           -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
       
       - echo "Waiting for Quality Gate..."
