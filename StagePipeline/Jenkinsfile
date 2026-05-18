@@ -141,7 +141,7 @@ pipeline {
 
 
 
-        stage ("Build DB Image") {
+    /*    stage ("Build DB Image") {
             steps {
                 script {
 
@@ -161,7 +161,7 @@ pipeline {
                 }
             }
         }
-
+    */
 
 
         stage ("Build App Image") {
