@@ -23,7 +23,7 @@ phases:
     commands:
       - mvn clean install -DskipTests
 
-arrtifacts:
+artifacts:
   files:
      - '**/*'
   base-directory: 'target/vprofile-v2'

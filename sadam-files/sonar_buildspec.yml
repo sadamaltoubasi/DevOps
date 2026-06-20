@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  parameter-store:
+    LOGIN: "LOGIN"
+    HOST: "HOST"
+    Organization: "Organization"
+    Project: "Project"
+
+phases:
+  install:
+    commands:
+      # الحصول على التوكن والتأكد من نجاح العملية
+      - TOKEN=$(aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text)
+      - if [ -z "$TOKEN" ]; then echo "Failed to fetch token"; exit 1; fi
+      - export CODEARTIFACT_AUTH_TOKEN=$TOKEN
+      # نسخ الملف
+      - cp ./settings.xml /root/.m2/settings.xml
+      
+  build:
+    commands:
+      - echo "Starting Build and Analysis..."
+      - mvn test -X
+      - mvn checkstyle:checkstyle
+      - mvn sonar:sonar -Dsonar.token=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ -Dsonar.junit.reportsPath=target/surefire-reports/ -Dsonar.jacoco.reportsPath=target/jacoco.exec -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml -Dsonar.exclusions=**/*.js,**/*.ts,**/*.css,**/*.html
+      
+      - echo "Waiting for Quality Gate..."
+      - sleep 10
+      - curl -s https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project > result.json
+      - if [ $(jq -r '.projectStatus.status' result.json) = "ERROR" ]; then echo "Quality Gate Failed"; exit 1; fi
