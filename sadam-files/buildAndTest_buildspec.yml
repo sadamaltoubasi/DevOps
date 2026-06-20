@@ -25,4 +25,5 @@ phases:
 
 artifacts:
   files:
-     - 'target/**/*'
+     - '**/*'
+  base-directory: 'target/vprofile-v2'
