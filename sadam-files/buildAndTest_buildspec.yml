@@ -1,0 +1,29 @@
+version: 0.2
+env: 
+  parameter-store:
+    dbhost: RDS-Endpoint
+    dbuser: RDSUSER
+    dbpass: RDSPASS
+phases:
+  install:
+    commands:
+      - cp ./settings.xml /root/.m2/settings.xml
+      # الحصول على التوكن والتأكد من نجاح العملية
+      - TOKEN=$(aws codeartifact get-authorization-token --domain vpro-maven --domain-owner 579275327561 --region us-east-1 --query authorizationToken --output text)
+      - if [ -z "$TOKEN" ]; then echo "Failed to fetch token"; exit 1; fi
+      - export CODEARTIFACT_AUTH_TOKEN=$TOKEN
+  pre_build:
+    commands:
+      - sed -i "s/jdbc.password=admin123/jdbc.password=$dbpass/" src/main/resources/application.properties
+      - sed -i "s/jdbc.username=admin/jdbc.username=$dbuser/" src/main/resources/application.properties
+      - sed -i "s/db01:3306/$dbhost:3306/" src/main/resources/application.properties
+      - apt-get update
+
+  build:
+    commands:
+      - mvn clean install -DskipTests
+
+arrtifacts:
+  files:
+     - '**/*'
+  base-directory: 'target/vprofile-v2'
