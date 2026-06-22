@@ -24,7 +24,7 @@ pipeline {
         NEXUSPASS = credentials('nexuspass')
 
         AWS_APP_NAME = 'vpro-app'
-        AWS_S3_BUCKET = 'sadam-bean'
+        AWS_S3_BUCKET = 'sadambean'
         AWS_REGION = 'us-east-1'
         AWS_ENV_NAME = 'Vpro-app-env'
     }
