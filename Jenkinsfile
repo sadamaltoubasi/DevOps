@@ -110,12 +110,10 @@ pipeline {
         stage('DEPLOY TO BEANSTALK') {
             steps {
                 // استخدام الـ Credentials المسجلة في جينكينز للوصول إلى AWS
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding', 
-                    credentialsId: 'aws-credentials-id', // ضع الـ ID الخاص ببيانات AWS هنا
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                ]]) {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
                     
                     script {
                         def artifactVersion = "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}"
