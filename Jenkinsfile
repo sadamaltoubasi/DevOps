@@ -22,6 +22,11 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
         NEXUSPASS = credentials('nexuspass')
+
+        AWS_APP_NAME = 'vpro-app'
+        AWS_S3_BUCKET = 'sadam-bean'
+        AWS_REGION = 'us-east-1'
+        AWS_ENV_NAME = 'Vpro-app-env '
     }
 
     stages {
@@ -50,7 +55,7 @@ pipeline {
             }
         }
 
-        stage('CODE ANALYSIS WITH CHECKSTYLE') {
+        stage('CHECKSTYLE') {
             steps {
                 sh 'mvn checkstyle:checkstyle'
             }
@@ -99,6 +104,40 @@ pipeline {
                          type: 'war']
                     ]
                 )
+            }
+        }
+
+        stage('DEPLOY TO BEANSTALK') {
+            steps {
+                // استخدام الـ Credentials المسجلة في جينكينز للوصول إلى AWS
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding', 
+                    credentialsId: 'aws-credentials-id', // ضع الـ ID الخاص ببيانات AWS هنا
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    
+                    script {
+                        def artifactVersion = "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}"
+                        def s3Key = "vprofile-v2-${artifactVersion}.war"
+                        
+                        // 1. رفع ملف الـ WAR إلى S3 (حيث يحتاج Beanstalk لقراءة الملف من هناك)
+                        sh "aws s3 cp target/vprofile-v2.war s3://${AWS_S3_BUCKET}/${s3Key} --region ${AWS_REGION}"
+                        
+                        // 2. إنشاء نسخة تطبيق جديدة (Application Version) في Beanstalk مرتبطة بملف الـ S3
+                        sh """aws elasticbeanstalk create-application-version \
+                            --application-name "${AWS_APP_NAME}" \
+                            --version-label "${artifactVersion}" \
+                            --source-bundle S3Bucket="${AWS_S3_BUCKET}",S3Key="${s3Key}" \
+                            --region ${AWS_REGION}"""
+                        
+                        // 3. تحديث البيئة (Environment) لتعمل بالنسخة الجديدة
+                        sh """aws elasticbeanstalk update-environment \
+                            --environment-name "${AWS_ENV_NAME}" \
+                            --version-label "${artifactVersion}" \
+                            --region ${AWS_REGION}"""
+                    }
+                }
             }
         }
     }
