@@ -26,7 +26,7 @@ pipeline {
         AWS_APP_NAME = 'vpro-app'
         AWS_S3_BUCKET = 'sadam-bean'
         AWS_REGION = 'us-east-1'
-        AWS_ENV_NAME = 'Vpro-app-env '
+        AWS_ENV_NAME = 'Vpro-app-env'
     }
 
     stages {
@@ -66,7 +66,7 @@ pipeline {
             }
         }
 
-        stage('CODE ANALYSIS with SONARQUBE') {
+        stage('SONARQUBE ANALYSIS') {
             environment {
                 scannerHome = tool 'sonarscanner'
             }
