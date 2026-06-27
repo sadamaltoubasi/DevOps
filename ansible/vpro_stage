@@ -1,0 +1,42 @@
+---
+- name: Build and Deploy vProfile Application using Docker
+  hosts: all
+  become: yes
+  vars:
+    app_dir: "/opt/app"
+
+  tasks:
+
+    - name: Ensure application directory exists
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy Dockerfile to the server
+      copy:
+        src: ./app/Dockerfile 
+        dest: "{{ app_dir }}/Dockerfile"
+
+    - name: Ensure docker network 'vprof-net' exists
+      community.docker.docker_network:
+        name: vprof-net
+        state: present
+
+    - name: Build Docker Image from Dockerfile
+      community.docker.docker_image:
+        build:
+          path: "{{ app_dir }}"
+        name: app01
+        tag: latest
+        source: build
+
+    - name: Run Tomcat 10 Application Container within vprof-net
+      community.docker.docker_container:
+        name: app01
+        image: app01:latest
+        state: started
+        restart_policy: unless-stopped
+        network_mode: vprof-net 
+        ports:
+          - "8080:8080"

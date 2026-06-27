@@ -1,0 +1,31 @@
+---
+- name: Deploy RabbitMQ Container using Docker
+  hosts: rmqsrvgrp
+  become: yes
+  tasks:
+
+    - name: Ensure python3-docker is installed (Required for Ansible docker module)
+      apt:
+        name: python3-docker
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure docker network 'vprof-net' exists
+      community.docker.docker_network:
+        name: vprof-net
+        state: present
+
+    - name: Run RabbitMQ Management Container
+      community.docker.docker_container:
+        name: rmq01
+        image: rabbitmq:3-management-alpine
+        state: started
+        restart_policy: unless-stopped
+        network_mode: vprof-net
+        ports:
+          - "5672:5672"
+          - "15672:15672"
+        env:
+          RABBITMQ_DEFAULT_USER: "admin"
+          RABBITMQ_DEFAULT_PASS: "admin123"

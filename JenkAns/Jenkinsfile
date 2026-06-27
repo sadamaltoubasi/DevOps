@@ -1,0 +1,159 @@
+def COLOR_MAP = [
+    'SUCCESS': 'good', 
+    'FAILURE': 'danger',
+]
+
+pipeline {
+    // جعل الـ Agent الافتراضي none لأننا سنحدد لكل Stage الحاوية الخاصة بها
+    agent none 
+    
+    environment {
+        SNAP_REPO = 'vprofile-snapshot'
+        NEXUS_USER = 'admin'
+        NEXUS_PASS = 'admin123'
+        RELEASE_REPO = 'vprofile-release'
+        CENTRAL_REPO = 'vpro-maven-central'
+        NEXUSIP = '172.31.40.75'
+        NEXUSPORT = '8081'
+        NEXUS_GRP_REPO = 'vpro-maven-group'
+        NEXUS_LOGIN = 'nexuslogin'
+        SONARSERVER = 'sonarserver'
+        SONARSCANNER = 'sonarscanner'
+        NEXUSPASS = credentials('nexuspass')
+    }
+
+    stages {
+        
+        // مرحلة الـ Build: تستخدم حاوية مافن الرسمية مع جافا 17
+        stage('Build'){
+            agent {
+                docker { image 'maven:3.9.6-eclipse-temurin-17' }
+            }
+            steps {
+                sh 'mvn -s settings.xml -DskipTests install'
+            }
+            post {
+                success {
+                    echo "Now Archiving."
+                    archiveArtifacts artifacts: '**/*.war'
+                }
+            }
+        }
+
+        // مرحلة الـ Test: تستخدم نفس حاوية مافن لضمان تطابق البيئة
+        stage('Test'){
+            agent {
+                docker { image 'maven:3.9.6-eclipse-temurin-17' }
+            }
+            steps {
+                sh 'mvn -s settings.xml test'
+            }
+        }
+
+        // مرحلة الـ Checkstyle
+        stage('Checkstyle Analysis'){
+            agent {
+                docker { image 'maven:3.9.6-eclipse-temurin-17' }
+            }
+            steps {
+                sh 'mvn -s settings.xml checkstyle:checkstyle'
+            }
+        }
+
+        // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
+        stage('Sonar Analysis') {
+            agent {
+                docker { image 'sonarsource/sonar-scanner-cli:latest' }
+            }
+            steps {
+               withSonarQubeEnv("${SONARSERVER}") {
+                   sh '''sonar-scanner -Dsonar.projectKey=vprofile \
+                   -Dsonar.projectName=vprofile \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.userHome=${WORKSPACE}/.sonar \
+                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+              }
+            }
+        }
+
+        // مرحلة الـ Quality Gate لا تحتاج لحاوية خارجية، تعمل على جينكينز مباشرة
+        stage("Quality Gate") {
+            agent any
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: false
+                }
+            }
+        }
+
+        // مرحلة الـ Upload لـ Nexus: تحتاج للـ Plugin الخاص بجينكينز، لذلك تعمل على agent any
+        stage("UploadArtifact"){
+            agent any
+            steps{
+                nexusArtifactUploader(
+                  nexusVersion: 'nexus3',
+                  protocol: 'http',
+                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                  groupId: 'QA',
+                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                  repository: "${RELEASE_REPO}",
+                  credentialsId: "${NEXUS_LOGIN}",
+                  artifacts: [
+                    [artifactId: 'vproapp',
+                     classifier: '',
+                     file: 'target/vprofile-v2.war',
+                     type: 'war']
+                  ]
+                )
+            }
+        }
+
+        // مرحلة الـ Ansible: تستخدم حاوية تحتوي على Ansible مثبت مسبقاً بدلاً من الـ Plugin المحلي
+        stage('Ansible Deploy to staging'){
+            agent {
+                docker { 
+                    // استخدام صورة شاملة تحتوي على الـ SSH والـ Python مسبقاً
+                    image 'alpine/ansible:latest'
+                    args '-u root -v /etc/hosts:/etc/hosts'
+                }
+            }
+            environment {
+                NEXUS_SEC_PASS = credentials('nexuspass')
+            }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'applogin', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                    sh """
+                    # حل مشكلة مسارات أنسيبل للملفات المؤقتة داخل الحاوية
+                    export HOME=${WORKSPACE}
+                    export ANSIBLE_LOCAL_TEMP=${WORKSPACE}/.ansible/tmp
+                    export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
+                    
+                    export ANSIBLE_HOST_KEY_CHECKING=False
+                    
+                    # تأمين ملف مفتاح الـ SSH
+                    chmod 400 \${SSH_KEY}
+                    
+                    # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
+                    ansible-playbook -i ansible/stage.inventory ansible/site.yml \
+                    --user=\${SSH_USER} \
+                    --private-key=\${SSH_KEY} \
+                    --extra-vars "USER=admin PASS=\${NEXUS_SEC_PASS} nexusip=172.31.40.75 reponame=vprofile-release groupid=QA time=${env.BUILD_TIMESTAMP} build=${env.BUILD_ID} artifactid=vproapp vprofile_version=vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Slack Notifications.'
+            slackSend channel: '#jenkins-cicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+        }
+    }
+}

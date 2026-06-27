@@ -1,0 +1,47 @@
+---
+- name: Deploy MySQL Database using Docker
+  hosts: dbsrvgrp
+  become: yes
+  vars:
+    project_path: "/opt/mysql-app"
+
+  tasks:
+    - name: 1. Create project directory on target server
+      file:
+        path: "{{ project_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Copy Dockerfile to target server
+      copy:
+        src: ./Dockerfile
+        dest: "{{ project_path }}/Dockerfile"
+
+    - name: Ensure docker network 'vprof-net' exists
+      community.docker.docker_network:
+        name: vprof-net
+        state: present
+
+    - name: 3. Copy Database Backup file to target server
+      copy:
+        src: ./db_backup.sql
+        dest: "{{ project_path }}/db_backup.sql"
+
+    - name: 4. Build Docker Image from Dockerfile
+      community.docker.docker_image:
+        build:
+          path: "{{ project_path }}"
+        name: db01
+        tag: latest
+        source: build
+
+    - name: 5. Run MySQL Docker Container
+      community.docker.docker_container:
+        name: db01
+        image: db01:latest
+        state: started
+        restart_policy: unless-stopped
+        networks:
+          - name: vprof-net
+        ports:
+          - "3306:3306"
