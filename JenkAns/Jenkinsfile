@@ -30,7 +30,7 @@ pipeline {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
             }
             steps {
-                sh 'mvn -s settings.xml -DskipTests install'
+                sh 'mvn clean install -DskipTests'
             }
             post {
                 success {
@@ -46,7 +46,7 @@ pipeline {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
             }
             steps {
-                sh 'mvn -s settings.xml test'
+                sh 'mvn test'
             }
         }
 
@@ -56,7 +56,7 @@ pipeline {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
             }
             steps {
-                sh 'mvn -s settings.xml checkstyle:checkstyle'
+                sh 'mvn checkstyle:checkstyle'
             }
         }
 
@@ -91,26 +91,7 @@ pipeline {
         }
 
         // مرحلة الـ Upload لـ Nexus: تحتاج للـ Plugin الخاص بجينكينز، لذلك تعمل على agent any
-        stage("UploadArtifact"){
-            agent any
-            steps{
-                nexusArtifactUploader(
-                  nexusVersion: 'nexus3',
-                  protocol: 'http',
-                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                  groupId: 'QA',
-                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                  repository: "${RELEASE_REPO}",
-                  credentialsId: "${NEXUS_LOGIN}",
-                  artifacts: [
-                    [artifactId: 'vproapp',
-                     classifier: '',
-                     file: 'target/vprofile-v2.war',
-                     type: 'war']
-                  ]
-                )
-            }
-        }
+
 
         // مرحلة الـ Ansible: تستخدم حاوية تحتوي على Ansible مثبت مسبقاً بدلاً من الـ Plugin المحلي
         stage('Ansible Deploy to staging'){
@@ -140,8 +121,7 @@ pipeline {
                     # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
-                    --private-key=\${SSH_KEY} \
-                    --extra-vars "USER=admin PASS=\${NEXUS_SEC_PASS} nexusip=172.31.40.75 reponame=vprofile-release groupid=QA time=${env.BUILD_TIMESTAMP} build=${env.BUILD_ID} artifactid=vproapp vprofile_version=vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
+                    --private-key=\${SSH_KEY}
                     """
                 }
             }
@@ -157,3 +137,6 @@ pipeline {
         }
     }
 }
+
+
+// --extra-vars "USER=admin PASS=\${NEXUS_SEC_PASS} nexusip=172.31.40.75 reponame=vprofile-release groupid=QA time=${env.BUILD_TIMESTAMP} build=${env.BUILD_ID} artifactid=vproapp vprofile_version=vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
