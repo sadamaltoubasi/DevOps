@@ -1,6 +1,6 @@
 ---
 - name: Build and Deploy vProfile Application using Docker
-  hosts: all
+  hosts: appsrvgrp
   become: yes
   vars:
     app_dir: "/opt/app"
