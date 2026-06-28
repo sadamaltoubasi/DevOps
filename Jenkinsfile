@@ -12,7 +12,6 @@ pipeline {
         AWS_REGION     = 'us-east-1'
         AWS_ACCOUNT_ID = '579275327561' // ضع رقم حسابك في AWS هنا
         ECR_REPO_NAME  = 'app01'
-        IMAGE_TAG      = "${env.BUILD_ID}"
     }
 
     stages {
