@@ -163,7 +163,8 @@ pipeline {
                     # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
-                    --private-key=\${SSH_KEY}
+                    --private-key=\${SSH_KEY} \
+                    --extra-vars "image_tag_env=${env.BUILD_ID}"
                     """
                 }
             }
