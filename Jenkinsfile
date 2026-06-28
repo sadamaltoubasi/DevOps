@@ -3,10 +3,9 @@ pipeline {
 
     // تعريف البارامترات هنا يجعلها تظهر بوضوح في Jenkins UI
     parameters {
-        string(name: 'BUILD', defaultValue: '', description: 'Build number from Nexus (e.g., 10)')
-        string(name: 'TIME', defaultValue: '', description: 'Timestamp from Nexus (e.g., 20260324-123646)')
+        // نطلب من المستخدم إدخال الـ Build ID للصورة المستهدفة في الـ Production
+        string(name: 'IMAGE_TAG', defaultValue: '', description: 'Enter the ECR Image Tag/Build ID to deploy (e.g., 15)')
     }
-
     environment {
         // حدد بيانات الـ ECR الخاصة بك هنا
         AWS_REGION     = 'us-east-1'
