@@ -45,7 +45,7 @@ pipeline {
                     chmod 400 \${SSH_KEY}
                     
                     # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
-                    ansible-playbook -i ansible/prod.inventory ansible/app-deploy.yml \
+                    ansible-playbook -i ansible/stage.inventory ansible/app-deploy.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
                     --extra-vars "image_tag_env=${params.IMAGE_TAG}"
