@@ -80,7 +80,6 @@ pipeline {
             }
         }
 
-        // مرحلة الـ Quality Gate لا تحتاج لحاوية خارجية، تعمل على جينكينز مباشرة
         stage("Quality Gate") {
             agent any
             steps {
@@ -90,7 +89,51 @@ pipeline {
             }
         }
 
-        // مرحلة الـ Upload لـ Nexus: تحتاج للـ Plugin الخاص بجينكينز، لذلك تعمل على agent any
+        stage('Build & Push to ECR') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli:latest'
+                    // تمرير الـ Docker Socket الخاص بالـ Host لكي نتمكن من تشغيل أوامر docker داخل حاوية الـ aws-cli
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
+                }
+            }
+            environment {
+                // حدد بيانات الـ ECR الخاصة بك هنا
+                AWS_REGION     = 'us-east-1'
+                AWS_ACCOUNT_ID = '579275327561' // ضع رقم حسابك في AWS هنا
+                ECR_REPO_NAME  = 'app01'
+                IMAGE_TAG      = "${env.BUILD_ID}"
+            }
+            steps {
+                // استخدام الـ Credentials الخاصة بـ AWS والمخزنة في جينكينز
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding', 
+                    credentialsId: 'awsbeancreds', // معرف الـ Credentials في جينكينز
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh """
+                    # 1. تثبيت الـ Docker CLI داخل حاوية الـ AWS CLI (لأن الصورة الأساسية تحتوي فقط على aws-cli)
+                    # ملاحظة: إذا كنت تستخدم صورة مخصصة تحتوي الاثنين معاً فهذا أفضل، لكن هذا الحل يعمل دائماً:
+                    curl -fsSL https://get.docker.com | sh
+                    
+                    # 2. عمل Login إلى AWS ECR
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    
+                    # 3. بناء الـ Docker Image (ستأخذ ملف الـ .war الجاهز في الـ workspace مباشرة)
+                    docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} .
+                    
+                    # 4. عمل Tag للصورة بالمسار الكامل للـ ECR
+                    docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
+                    docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
+                    
+                    # 5. رفع الصور (Push) إلى ECR
+                    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
+                    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
+                    """
+                }
+            }
+        }
 
 
         // مرحلة الـ Ansible: تستخدم حاوية تحتوي على Ansible مثبت مسبقاً بدلاً من الـ Plugin المحلي
