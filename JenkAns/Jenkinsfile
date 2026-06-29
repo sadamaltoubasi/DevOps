@@ -64,11 +64,12 @@ pipeline {
         // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
         stage('SonarCloud Analysis') {
             agent {
-                docker { image 'sonarsource/sonar-scanner-cli:latest' }
+                docker { image 'sonarsource/sonar-scanner-cli:latest' 
+                args '-u root --entrypoint='
+            }
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarcloud', variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('SonarCloud-Server') { 
                         sh '''
                             sonar-scanner \
                             -Dsonar.organization=jenkans \
@@ -80,7 +81,7 @@ pipeline {
                     }
                 }
             }
-        }
+        
 
         stage("Quality Gate") {
             agent any
