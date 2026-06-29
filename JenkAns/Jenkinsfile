@@ -83,6 +83,7 @@ pipeline {
                             -Dsonar.jacoco.reportsPath=target/jacoco.exec \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
                             -Dsonar.exclusions=**/*.js,**/*.ts,**/*.css,**/*.html
+                            -Dsonar.qualitygate.wait=true
 
                         '''
                     }
@@ -90,14 +91,6 @@ pipeline {
             }
         
 
-        stage("Quality Gate") {
-            agent any
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: false
-                }
-            }
-        }
 
         stage('Build & Push to ECR') {
             agent {
