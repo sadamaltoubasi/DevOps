@@ -63,23 +63,23 @@ pipeline {
 
         // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
         stage('SonarCloud Analysis') {
+            agent {
+                docker { image 'sonarsource/sonar-scanner-cli:latest' }
+            }
             steps {
                 withCredentials([string(credentialsId: 'sonarcloud', variable: 'SONAR_TOKEN')]) {
-                // Use the withSonarQubeEnv step to pull your configured SonarCloud details
-                withSonarQubeEnv('SonarCloud-Server') { 
-                    
-                    // Assumes you have SonarScanner installed/configured in Jenkins global tools
-                    sh '''
-                        sonar-scanner \
-                        -Dsonar.organization=jenkans \
-                        -Dsonar.projectKey=jenkans_vprofile-project \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.login=$SONAR_TOKEN
+                    withSonarQubeEnv('SonarCloud-Server') { 
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.organization=jenkans \
+                            -Dsonar.projectKey=jenkans_vprofile-project \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=https://sonarcloud.io \
+                            -Dsonar.login=$SONAR_TOKEN
                         '''
+                    }
                 }
             }
-        }
         }
 
         stage("Quality Gate") {
