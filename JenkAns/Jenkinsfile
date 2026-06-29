@@ -64,9 +64,10 @@ pipeline {
         // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
         stage('SonarCloud Analysis') {
             agent {
-                docker { image 'sonarsource/sonar-scanner-cli:latest' 
-                args '-u root --entrypoint='
-            }
+                docker { 
+                  image 'sonarsource/sonar-scanner-cli:latest' 
+                  args '-u root --entrypoint='
+                }
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarcloud', variable: 'SONAR_TOKEN')]) {
@@ -76,7 +77,13 @@ pipeline {
                             -Dsonar.projectKey=jenkans_vprofile-project \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=https://sonarcloud.io \
-                            -Dsonar.token=$SONAR_TOKEN
+                            -Dsonar.token=$SONAR_TOKEN \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                            -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.exclusions=**/*.js,**/*.ts,**/*.css,**/*.html
+
                         '''
                     }
                 }
@@ -189,3 +196,4 @@ pipeline {
 
 
 // --extra-vars "USER=admin PASS=\${NEXUS_SEC_PASS} nexusip=172.31.40.75 reponame=vprofile-release groupid=QA time=${env.BUILD_TIMESTAMP} build=${env.BUILD_ID} artifactid=vproapp vprofile_version=vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
+// -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/
