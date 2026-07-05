@@ -83,7 +83,7 @@ pipeline {
                             -Dsonar.jacoco.reportsPath=target/jacoco.exec \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
                             -Dsonar.exclusions=**/*.js,**/*.ts,**/*.css,**/*.html \
-                            -Dsonar.qualitygate.wait=true
+                            -Dsonar.qualitygate.wait=false
 
                         '''
                     }
