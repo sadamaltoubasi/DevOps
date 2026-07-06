@@ -1,15 +1,12 @@
 pipeline {
     agent any
 
-    // تعريف البارامترات هنا يجعلها تظهر بوضوح في Jenkins UI
     parameters {
-        // نطلب من المستخدم إدخال الـ Build ID للصورة المستهدفة في الـ Production
         string(name: 'IMAGE_TAG', defaultValue: '', description: 'Enter the ECR Image Tag/Build ID to deploy (e.g., 15)')
     }
     environment {
-        // حدد بيانات الـ ECR الخاصة بك هنا
         AWS_REGION     = 'us-east-1'
-        AWS_ACCOUNT_ID = '579275327561' // ضع رقم حسابك في AWS هنا
+        AWS_ACCOUNT_ID = '579275327561' 
         ECR_REPO_NAME  = 'app01'
     }
 
@@ -17,7 +14,6 @@ pipeline {
         stage('Ansible Deploy to staging'){
             agent {
                 docker { 
-                    // استخدام صورة شاملة تحتوي على الـ SSH والـ Python مسبقاً
                     image 'alpine/ansible:latest'
                     args "-u root -v /etc/hosts:/etc/hosts -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE}"
                 }
@@ -44,7 +40,6 @@ pipeline {
                     # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
                     
-                    # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
                     ansible-playbook -i ansible/stage.inventory ansible/app-deploy.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
@@ -57,7 +52,6 @@ pipeline {
     
     post {
         always {
-            // استخدام تلوين Slack بناءً على النتيجة
             script {
                 def color = (currentBuild.currentResult == 'SUCCESS') ? 'good' : 'danger'
                 slackSend(
