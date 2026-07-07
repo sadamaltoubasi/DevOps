@@ -146,7 +146,7 @@ pipeline {
                     ansible-playbook -i ansible/prod.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
-                    --extra-vars "image_tag_env=${env.BUILD_ID}"
+                    --extra-vars "image_tag_env=${env.BUILD_ID} ssh_key_path=\${SSH_KEY}"
                     """
                 }
             }

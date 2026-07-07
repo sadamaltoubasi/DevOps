@@ -2,7 +2,8 @@ resource "local_file" "ansible_inventory" {
   filename = "${path.module}/../ansible/prod.inventory"
   content  = <<EOT
 [all:vars]
-ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ansible_env.SSH_KEY }} -W %h:%p -q ubuntu@${aws_instance.bastion-host.public_ip}"'
+
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -W %h:%p -q ubuntu@${aws_instance.bastion-host.public_ip}"'
 
 [dbsrvgrp]
 ${aws_instance.app_server.private_ip}
