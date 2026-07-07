@@ -1,0 +1,4 @@
+resource "aws_key_pair" "vprotest" {
+  key_name   = "vprotest"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIWiNvvaIXiBYaB+uPj3Q9GZS4c7/rYRaA0uk7Lgtv2 Altobasy@User01"
+}

@@ -1,11 +1,25 @@
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p -q ubuntu@{{ bastion_ip }}"'
+
+
 [dbsrvgrp]
-app01.vpro.ans
+
+app01.vpro-terra
+
+
 
 [rmqsrvgrp]
-app01.vpro.ans
+
+rmq01.vpro-terra
+
+
 
 [mcsrvgrp]
-app01.vpro.ans
+
+mc01.vpro-terra
+
+
 
 [appsrvgrp]
-app01.vpro.ans
+
+app01.vpro-terra
+

@@ -20,6 +20,8 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
         NEXUSPASS = credentials('nexuspass')
+
+        BASTION_PUBLIC_IP = '54.227.230.251'
     }
 
     stages {
@@ -154,7 +156,7 @@ pipeline {
                 NEXUS_SEC_PASS = credentials('nexuspass')
             }
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'applogin', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh """
                     # حل مشكلة مسارات أنسيبل للملفات المؤقتة داخل الحاوية
                     export HOME=${WORKSPACE}
@@ -170,7 +172,8 @@ pipeline {
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
-                    --extra-vars "image_tag_env=${env.BUILD_ID}"
+                    --extra-vars "image_tag_env=${env.BUILD_ID} bastion_ip=${BASTION_PUBLIC_IP}" \
+                    --ssh-common-args="-o ProxyCommand=\\\"ssh -o StrictHostKeyChecking=no -i \${SSH_KEY} -W %h:%p -q \${SSH_USER}@${BASTION_PUBLIC_IP}\\\""
                     """
                 }
             }
