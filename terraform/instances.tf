@@ -92,6 +92,22 @@ resource "aws_instance" "app_server" {
   }
 }
 
+resource "aws_instance" "prod_server" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t2.medium"
+  subnet_id              = module.vpc.private_subnets[1]
+  vpc_security_group_ids = [aws_security_group.backend_sg.id]
+  key_name               = aws_key_pair.vprotest.key_name
+  iam_instance_profile   = aws_iam_instance_profile.app_server_profile.name
+
+
+  tags = {
+    Name        = "app-server"
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
 
 resource "aws_instance" "bastion-host" {
   ami                         = data.aws_ami.ubuntu.id
