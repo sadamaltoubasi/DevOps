@@ -43,7 +43,7 @@ pipeline {
         }
 
         // مرحلة الـ Test: تستخدم نفس حاوية مافن لضمان تطابق البيئة
-    /*     stage('Test'){
+        stage('Test'){
             agent {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
             }
@@ -114,7 +114,7 @@ pipeline {
                 }
             }
         }
-        */
+        
 
 
         // مرحلة الـ Ansible: تستخدم حاوية تحتوي على Ansible مثبت مسبقاً بدلاً من الـ Plugin المحلي
