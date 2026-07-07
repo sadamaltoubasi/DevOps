@@ -172,8 +172,7 @@ pipeline {
                     ansible-playbook -i ansible/prod.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
-                    --extra-vars "image_tag_env=${env.BUILD_ID} bastion_ip=${BASTION_PUBLIC_IP}" \
-                    --ssh-common-args="-o ProxyCommand=\\\"ssh -o StrictHostKeyChecking=no -i \${SSH_KEY} -W %h:%p -q \${SSH_USER}@${BASTION_PUBLIC_IP}\\\""
+                    --extra-vars "image_tag_env=${env.BUILD_ID}"
                     """
                 }
             }
