@@ -40,7 +40,7 @@ pipeline {
                     # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
                     
-                    ansible-playbook -i ansible/prod.inventory ansible/app-deploy.yml \
+                    ansible-playbook -i ansible/prod.inventory ansible/prod-site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
                     --extra-vars "image_tag_env=${params.IMAGE_TAG} ssh_key_path=\${SSH_KEY}"
