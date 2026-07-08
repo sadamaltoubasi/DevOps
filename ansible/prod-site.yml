@@ -1,0 +1,4 @@
+---
+- import_playbook: db-deploy.yml
+- import_playbook: app-deploy.yml
+####
