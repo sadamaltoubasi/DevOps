@@ -47,6 +47,11 @@
         name: docker
         state: present
 
+    - name: Ensure docker network 'vprof-net' exists
+      community.docker.docker_network:
+        name: vprof-net
+        state: present
+
   #-----------------------------------------------------------------------------------------------------------
   
 
