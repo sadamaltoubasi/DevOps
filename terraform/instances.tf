@@ -102,7 +102,7 @@ resource "aws_instance" "prod_server" {
 
 
   tags = {
-    Name        = "app-server"
+    Name        = "prod-server"
     Environment = "dev"
     Terraform   = "true"
   }
