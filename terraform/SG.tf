@@ -65,14 +65,21 @@ resource "aws_security_group" "backend_sg" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
+    self            = true
   }
 
   ingress {
     from_port       = 5672
     to_port         = 5672
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
+    self            = true
+  }
+
+  ingress {
+    from_port       = 11211
+    to_port         = 11211
+    protocol        = "tcp"
+    self            = true
   }
 
   ingress {
