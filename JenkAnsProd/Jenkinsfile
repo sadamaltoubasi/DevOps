@@ -28,7 +28,7 @@ pipeline {
                 NEXUS_SEC_PASS = credentials('nexuspass')
             }
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'applogin', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh """
                     # حل مشكلة مسارات أنسيبل للملفات المؤقتة داخل الحاوية
                     export HOME=${WORKSPACE}
@@ -40,10 +40,10 @@ pipeline {
                     # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
                     
-                    ansible-playbook -i ansible/stage.inventory ansible/app-deploy.yml \
+                    ansible-playbook -i ansible/prod.inventory ansible/app-deploy.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
-                    --extra-vars "image_tag_env=${params.IMAGE_TAG}"
+                    --extra-vars "image_tag_env=${params.IMAGE_TAG} ssh_key_path=\${SSH_KEY}"
                     """
                 }
             }
