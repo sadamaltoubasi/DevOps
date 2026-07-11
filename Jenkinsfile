@@ -109,7 +109,7 @@ stage('Ansible Deploy to staging'){
                     chmod 400 \${SSH_KEY}
                     
                     # 1. تثبيت الكولكشن داخل مجلد المشروع المحلي مباشرة
-                    ansible-galaxy collection install amazon.aws --collections-path ./ansible/collections --force
+                    ansible-galaxy collection install amazon.aws --collections-path ./ansible --force
                     
                     # 2. تشغيل الـ Playbook (سيتعرف تلقائياً على المسار من ansible.cfg)
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
