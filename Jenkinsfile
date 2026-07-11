@@ -42,7 +42,6 @@ pipeline {
             }
         }
 
-        // مرحلة الـ Test: تستخدم نفس حاوية مافن لضمان تطابق البيئة
         stage('Test'){
             agent {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
@@ -52,7 +51,6 @@ pipeline {
             }
         }
 
-        // مرحلة الـ Checkstyle
         stage('Checkstyle Analysis'){
             agent {
                 docker { image 'maven:3.9.6-eclipse-temurin-17' }
@@ -103,17 +101,15 @@ pipeline {
                 }
             }
             environment {
-                // حدد بيانات الـ ECR الخاصة بك هنا
                 AWS_REGION     = 'us-east-1'
-                AWS_ACCOUNT_ID = '579275327561' // ضع رقم حسابك في AWS هنا
+                AWS_ACCOUNT_ID = '579275327561'
                 ECR_REPO_NAME  = 'app01'
                 IMAGE_TAG      = "${env.BUILD_ID}"
             }
             steps {
-                // استخدام الـ Credentials الخاصة بـ AWS والمخزنة في جينكينز
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding', 
-                    credentialsId: 'awsbeancreds', // معرف الـ Credentials في جينكينز
+                    credentialsId: 'awsbeancreds',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -121,17 +117,13 @@ pipeline {
 
                     apk add --no-cache aws-cli
       
-                    # 2. عمل Login إلى AWS ECR
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                     
-                    # 3. بناء الـ Docker Image (ستأخذ ملف الـ .war الجاهز في الـ workspace مباشرة)
                     docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} .
                     
-                    # 4. عمل Tag للصورة بالمسار الكامل للـ ECR
                     docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
                     docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
                     
-                    # 5. رفع الصور (Push) إلى ECR
                     docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
                     docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
 
@@ -144,11 +136,9 @@ pipeline {
         
 
 
-        // مرحلة الـ Ansible: تستخدم حاوية تحتوي على Ansible مثبت مسبقاً بدلاً من الـ Plugin المحلي
         stage('Ansible Deploy to staging'){
             agent {
                 docker { 
-                    // استخدام صورة شاملة تحتوي على الـ SSH والـ Python مسبقاً
                     image 'alpine/ansible:latest'
                     args '-u root -v /etc/hosts:/etc/hosts'
                 }
@@ -159,17 +149,14 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh """
-                    # حل مشكلة مسارات أنسيبل للملفات المؤقتة داخل الحاوية
                     export HOME=${WORKSPACE}
                     export ANSIBLE_LOCAL_TEMP=${WORKSPACE}/.ansible/tmp
                     export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
                     
                     export ANSIBLE_HOST_KEY_CHECKING=False
                     
-                    # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
                     
-                    # تشغيل الأنسيبل مباشرة (الـ SSH مدعوم تلقائياً هنا)
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
