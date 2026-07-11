@@ -114,7 +114,7 @@ pipeline {
                     
                     chmod 400 \${SSH_KEY}
 
-                    ansible-galaxy collection install amazon.aws --collections-path ${WORKSPACE}/collections
+                    ansible-galaxy collection install amazon.aws --collections-path ${WORKSPACE}/collections --force
                     
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
