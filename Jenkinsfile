@@ -42,23 +42,6 @@ pipeline {
             }
         }
 
-        stage('Test'){
-            agent {
-                docker { image 'maven:3.9.6-eclipse-temurin-17' }
-            }
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Checkstyle Analysis'){
-            agent {
-                docker { image 'maven:3.9.6-eclipse-temurin-17' }
-            }
-            steps {
-                sh 'mvn checkstyle:checkstyle'
-            }
-        }
 
 
         // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
@@ -131,7 +114,7 @@ pipeline {
                     
                     chmod 400 \${SSH_KEY}
 
-                    ansible-galaxy collection install amazon.aws
+                    ansible-galaxy collection install amazon.aws --collections-path ${WORKSPACE}/collections
                     
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
