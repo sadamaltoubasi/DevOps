@@ -112,8 +112,11 @@ stage('Ansible Deploy to staging'){
                     
                     export ANSIBLE_HOST_KEY_CHECKING=False
                     
-                    # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
+
+                    pip install boto3 botocore --break-system-packages
+
+                    ansible-galaxy collection install amazon.aws --collections-path \${WORKSPACE}/.ansible/collections --force
                     
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
