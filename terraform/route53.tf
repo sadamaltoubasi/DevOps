@@ -12,6 +12,8 @@ resource "aws_route53_record" "rabbitmq_record" {
   type    = "A"
   ttl     = "300"
   records = [aws_instance.rabbitmq_server.private_ip]
+
+  depends_on = [aws_route53_zone.private_zone]
 }
 
 resource "aws_route53_record" "memcached_record" {
@@ -20,5 +22,7 @@ resource "aws_route53_record" "memcached_record" {
   type    = "A"
   ttl     = "300"
   records = [aws_instance.memcached_server.private_ip]
+
+  depends_on = [aws_route53_zone.private_zone]
 }
 
