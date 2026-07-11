@@ -114,7 +114,7 @@ stage('Ansible Deploy to staging'){
                     
                     chmod 400 \${SSH_KEY}
 
-                    pip install boto3 botocore --break-system-packages
+                    apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
 
                     ansible-galaxy collection install amazon.aws --collections-path \${WORKSPACE}/.ansible/collections --force
                     
