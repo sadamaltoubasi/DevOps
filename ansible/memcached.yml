@@ -62,7 +62,7 @@
         network_mode: vprof-net
         ports:
           - "11211:11211"
-        notify: Restart memcached container
+      notify: Restart memcached container
    
   handlers:
     - name: Restart memcached container
