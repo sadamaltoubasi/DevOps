@@ -63,34 +63,6 @@ pipeline {
 
         // مرحلة الـ Sonar: تستخدم حاوية الـ Sonar Scanner الرسمية (بدون الحاجة لعمل tool في جينكينز)
 
-        stage('SonarCloud Analysis') {
-            agent {
-                docker { 
-                  image 'sonarsource/sonar-scanner-cli:latest' 
-                  args '-u root --entrypoint='
-                }
-            }
-            steps {
-                withCredentials([string(credentialsId: 'sonarcloud', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            sonar-scanner \
-                            -Dsonar.organization=jenkans \
-                            -Dsonar.projectKey=jenkans_vprofile-project \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=https://sonarcloud.io \
-                            -Dsonar.token=$SONAR_TOKEN \
-                            -Dsonar.java.binaries=target/classes \
-                            -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                            -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                            -Dsonar.exclusions=**/*.js,**/*.ts,**/*.css,**/*.html \
-                            -Dsonar.qualitygate.wait=false
-
-                        '''
-                    }
-                }
-            }
-        
 
         stage('Build & Push to ECR') {
             agent {
@@ -158,6 +130,8 @@ pipeline {
                     export ANSIBLE_HOST_KEY_CHECKING=False
                     
                     chmod 400 \${SSH_KEY}
+
+                    ansible-galaxy collection install amazon.aws
                     
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
