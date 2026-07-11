@@ -129,6 +129,8 @@ pipeline {
 
                     docker rmi ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
                     docker rmi ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
+
+                    docker rmi ${ECR_REPO_NAME}:${IMAGE_TAG}
                     """
                 }
             }
