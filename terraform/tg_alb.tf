@@ -51,11 +51,6 @@ resource "aws_lb_listener" "http_listener" {
   }
 }
 
-# 8. مخرجات (Outputs): لطباعة رابط الـ ALB بعد الانتهاء لتجربته مباشرة
-output "alb_dns_name" {
-  description = "The DNS name of the Load Balancer"
-  value       = aws_lb.app_alb.dns_name
-}
 
 
 
@@ -80,7 +75,7 @@ resource "aws_lb_target_group" "prod_app_tg" {
 
 resource "aws_lb_target_group_attachment" "attach_instance_prod" {
   target_group_arn = aws_lb_target_group.prod_app_tg.arn
-  target_id        = aws_instance.prod_server.id 
+  target_id        = aws_instance.prod_server.id
   port             = 8080
 }
 
@@ -109,7 +104,3 @@ resource "aws_lb_listener" "http_listener_prod" {
   }
 }
 
-output "alb_prod_dns_name" {
-  description = "The DNS name of the Load Balancer"
-  value       = aws_lb.prod_alb.dns_name
-}

@@ -62,29 +62,36 @@ resource "aws_security_group" "backend_sg" {
   }
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    self            = true
+    from_port = 3306
+    to_port   = 3306
+    protocol  = "tcp"
+    self      = true
   }
 
   ingress {
-    from_port       = 5672
-    to_port         = 5672
-    protocol        = "tcp"
-    self            = true
+    from_port = 5672
+    to_port   = 5672
+    protocol  = "tcp"
+    self      = true
   }
 
   ingress {
-    from_port       = 11211
-    to_port         = 11211
-    protocol        = "tcp"
-    self            = true
+    from_port = 11211
+    to_port   = 11211
+    protocol  = "tcp"
+    self      = true
   }
 
   ingress {
     from_port       = 22
     to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
     protocol        = "tcp"
     security_groups = [aws_security_group.bastion_sg.id]
   }
@@ -97,6 +104,6 @@ resource "aws_security_group" "backend_sg" {
   }
 
   tags = {
-    Name = "vpro-instance-sg"
+    Name = "backend_sg"
   }
 }

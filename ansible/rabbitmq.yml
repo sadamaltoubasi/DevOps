@@ -68,3 +68,12 @@
         env:
           RABBITMQ_DEFAULT_USER: "admin"
           RABBITMQ_DEFAULT_PASS: "admin123"
+      notify: Restart rabbitmq container
+  
+  handlers:
+    - name: Restart rabbitmq container
+      community.docker.docker_container:
+        name: rmq01
+        image: rabbitmq:3-management-alpine
+        state: started
+        restart: true

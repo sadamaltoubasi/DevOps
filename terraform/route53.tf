@@ -1,8 +1,8 @@
 resource "aws_route53_zone" "private_zone" {
-  name = "vpro.internal" 
+  name = "vpro.internal"
 
   vpc {
-    vpc_id = module.vpc.vpc_id 
+    vpc_id = module.vpc.vpc_id
   }
 }
 
