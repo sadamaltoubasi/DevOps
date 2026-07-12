@@ -112,6 +112,8 @@ stage('Ansible Deploy to staging'){
             export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
             export ANSIBLE_HOST_KEY_CHECKING=False
 
+            export ANSIBLE_COLLECTIONS_PATH=${WORKSPACE}/.ansible/collections
+
             chmod 400 \${SSH_KEY}
 
             # تثبيت حزم النظام المطلوبة للبايثون
