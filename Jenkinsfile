@@ -97,6 +97,9 @@ pipeline {
             agent {
                 docker { 
                     image '579275327561.dkr.ecr.us-east-1.amazonaws.com/jenkans:latest'
+                    alwaysPull true
+                    registryUrl 'https://579275327561.dkr.ecr.us-east-1.amazonaws.com'
+                    registryCredentialsId 'awsbeancreds'
                     args '-u root -v /etc/hosts:/etc/hosts'
                 }
             }
