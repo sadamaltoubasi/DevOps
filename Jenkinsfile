@@ -93,7 +93,7 @@ pipeline {
         
 
 
-stage('Ansible Deploy to staging'){
+        stage('Ansible Deploy to staging'){
             agent {
                 docker { 
                     image '579275327561.dkr.ecr.us-east-1.amazonaws.com/jenkans:latest'
@@ -107,7 +107,7 @@ stage('Ansible Deploy to staging'){
                 withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh """
                     chmod 400 \${SSH_KEY}
-                            
+
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
