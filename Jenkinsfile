@@ -113,15 +113,18 @@ stage('Ansible Deploy to staging'){
                     
                     chmod 400 \${SSH_KEY}
 
-                    # 1. تثبيت حزم النظام المطلوبة للبايثون
+                    # 1. تثبيت حزم بايثون
                     apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
 
-                    # 2. تثبيت الكولكشن ديناميكياً في المجلد الحالي
+                    # 2. تثبيت الكولكشن في مجلد واضح ومحدد
                     ansible-galaxy collection install -r ansible/requirements.yml --collections-path \${WORKSPACE}/.ansible/collections --force
 
-                    # 3. الخدعة القاطعة: إنشاء مسار النظام الافتراضي وربطه بالـ Workspace
-                    mkdir -p /root/.ansible/
-                    ln -s \${WORKSPACE}/.ansible/collections /root/.ansible/collections
+                    # 3. الحل الحاسم: إجبار أنسبل عبر ملف الإعدادات المحلي على رؤية الكولكشن
+                    echo "[defaults]" > ansible.cfg
+                    echo "collections_paths = \${WORKSPACE}/.ansible/collections" >> ansible.cfg
+                    
+                    # طباعة الملف للتأكد من كتابته بشكل صحيح في الـ Log
+                    cat ansible.cfg
 
                     # 4. تشغيل الـ Playbook
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
