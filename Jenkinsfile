@@ -94,43 +94,44 @@ pipeline {
 
 
 stage('Ansible Deploy to staging'){
-    agent {
-        docker { 
-            // العودة للصورة العامة لتجنب مشاكل سحب الـ ECR
-            image 'alpine/ansible:latest'
-            args '-u root -v /etc/hosts:/etc/hosts'
+            agent {
+                docker { 
+                    image 'alpine/ansible:latest'
+                    args '-u root -v /etc/hosts:/etc/hosts'
+                }
+            }
+            environment {
+                NEXUS_SEC_PASS = credentials('nexuspass')
+            }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                    sh """
+                    export HOME=${WORKSPACE}
+                    export ANSIBLE_LOCAL_TEMP=${WORKSPACE}/.ansible/tmp
+                    export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
+                    export ANSIBLE_HOST_KEY_CHECKING=False
+                    
+                    chmod 400 \${SSH_KEY}
+
+                    # 1. تثبيت حزم النظام المطلوبة للبايثون
+                    apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
+
+                    # 2. تثبيت الكولكشن ديناميكياً في المجلد الحالي
+                    ansible-galaxy collection install -r ansible/requirements.yml --collections-path \${WORKSPACE}/.ansible/collections --force
+
+                    # 3. الخدعة القاطعة: إنشاء مسار النظام الافتراضي وربطه بالـ Workspace
+                    mkdir -p /root/.ansible/
+                    ln -s \${WORKSPACE}/.ansible/collections /root/.ansible/collections
+
+                    # 4. تشغيل الـ Playbook
+                    ansible-playbook -i ansible/stage.inventory ansible/site.yml \
+                    --user=\${SSH_USER} \
+                    --private-key=\${SSH_KEY} \
+                    --extra-vars "image_tag_env=${env.BUILD_ID} ssh_key_path=\${SSH_KEY}"
+                    """
+                }
+            }
         }
-    }
-    environment {
-        NEXUS_SEC_PASS = credentials('nexuspass')
-    }
-    steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
-            sh """
-            export HOME=${WORKSPACE}
-            export ANSIBLE_LOCAL_TEMP=${WORKSPACE}/.ansible/tmp
-            export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
-            export ANSIBLE_HOST_KEY_CHECKING=False
-
-            export ANSIBLE_COLLECTIONS_PATH=${WORKSPACE}/.ansible/collections
-
-            chmod 400 \${SSH_KEY}
-
-            # تثبيت حزم النظام المطلوبة للبايثون
-            apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
-
-            # تثبيت الكولكشن ديناميكياً في مسار معزول وصحيح للـ Workspace الحالي
-            ansible-galaxy collection install -r ansible/requirements.yml --collections-path \${WORKSPACE}/.ansible/collections --force
-
-            # تشغيل الـ Playbook
-            ansible-playbook -i ansible/stage.inventory ansible/site.yml \
-            --user=\${SSH_USER} \
-            --private-key=\${SSH_KEY} \
-            --extra-vars "image_tag_env=${env.BUILD_ID} ssh_key_path=\${SSH_KEY}"
-            """
-        }
-    }
-}
     }
 
     post {
