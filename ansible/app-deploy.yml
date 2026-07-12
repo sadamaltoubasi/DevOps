@@ -69,21 +69,11 @@
       # نطلق الـ Handler فقط إذا تم سحب صورة جديدة أو تحديث جديد فعلياً
       notify: Recreate application container 
 
-    - name: Fetch Database Configuration from AWS SSM Parameter Store
-      amazon.aws.aws_ssm:
-        name: "{{ item }}"
-        region: "us-east-1"
-      register: ssm_lookups
-      loop:
-        - "/vprofile/staging/db_url"
-        - "/vprofile/staging/db_user"
-        - "/vprofile/staging/db_pass"
-
-    - name: Set facts for DB variables
-      set_fact:
-        db_url: "{{ ssm_lookups.results[0].value }}"
-        db_user: "{{ ssm_lookups.results[1].value }}"
-        db_pass: "{{ ssm_lookups.results[2].value }}"
+    - name: Read DB configuration from AWS SSM
+      ansible.builtin.set_fact:
+        db_url: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_url', region='us-east-1') }}"
+        db_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_user', region='us-east-1') }}"
+        db_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_pass', region='us-east-1') }}"
 
     - name: Run Application Docker Container with Env Variables
       community.docker.docker_container:

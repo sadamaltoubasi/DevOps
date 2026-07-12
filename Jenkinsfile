@@ -126,6 +126,12 @@ stage('Ansible Deploy to staging'){
                     # طباعة الملف للتأكد من كتابته بشكل صحيح في الـ Log
                     cat ansible.cfg
 
+                    echo "===== Available SSM Lookup Plugins ====="
+                    ansible-doc -t lookup -l | grep ssm
+
+                    echo "===== Available AWS Plugins ====="
+                    ansible-doc -t lookup -l | grep amazon
+
                     # 4. تشغيل الـ Playbook
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
