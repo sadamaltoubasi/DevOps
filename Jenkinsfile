@@ -96,7 +96,7 @@ pipeline {
 stage('Ansible Deploy to staging'){
             agent {
                 docker { 
-                    image 'alpine/ansible:latest'
+                    image '579275327561.dkr.ecr.us-east-1.amazonaws.com/jenkans:latest'
                     args '-u root -v /etc/hosts:/etc/hosts'
                 }
             }
@@ -106,18 +106,8 @@ stage('Ansible Deploy to staging'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'bastion_login', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh """
-                    export HOME=${WORKSPACE}
-                    export ANSIBLE_LOCAL_TEMP=${WORKSPACE}/.ansible/tmp
-                    export ANSIBLE_REMOTE_TEMP=/tmp/.ansible/tmp
-                    
-                    export ANSIBLE_HOST_KEY_CHECKING=False
-                    
                     chmod 400 \${SSH_KEY}
-
-                    apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
-
-                    ansible-galaxy collection install amazon.aws --collections-path \${WORKSPACE}/.ansible/collections --force
-                    
+                            
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
