@@ -75,6 +75,12 @@
         db_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_user', region='us-east-1') }}"
         db_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_pass', region='us-east-1') }}"
 
+    - name: Read RabbitMQ configuration from AWS SSM
+      ansible.builtin.set_fact:
+        rmq_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_user', region='us-east-1') }}"
+        rmq_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_pass', region='us-east-1') }}"
+
+
     - name: Run Application Docker Container with Env Variables
       community.docker.docker_container:
         name: vprofile-app
@@ -88,6 +94,9 @@
           DB_URL: "{{ db_url }}"
           DB_USER: "{{ db_user }}"
           DB_PASS: "{{ db_pass }}"
+
+          RMQ_USER: "{{ rmq_user }}"
+          RMQ_PASS: "{{ rmq_pass }}"
 
 #======= الـ handlers هنا تبدأ من أول السطر بدون مسافات زائدة وتوازي قسم الـ tasks =======
   handlers:

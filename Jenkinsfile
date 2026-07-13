@@ -113,17 +113,13 @@ stage('Ansible Deploy to staging'){
                     
                     chmod 400 \${SSH_KEY}
 
-                    # 1. تثبيت حزم بايثون
                     apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
 
-                    # 2. تثبيت الكولكشن في مجلد واضح ومحدد
                     ansible-galaxy collection install -r ansible/requirements.yml --collections-path \${WORKSPACE}/.ansible/collections --force
 
-                    # 3. الحل الحاسم: إجبار أنسبل عبر ملف الإعدادات المحلي على رؤية الكولكشن
                     echo "[defaults]" > ansible.cfg
                     echo "collections_paths = \${WORKSPACE}/.ansible/collections" >> ansible.cfg
                     
-                    # طباعة الملف للتأكد من كتابته بشكل صحيح في الـ Log
                     cat ansible.cfg
 
                     echo "===== Available SSM Lookup Plugins ====="
@@ -132,7 +128,6 @@ stage('Ansible Deploy to staging'){
                     echo "===== Available AWS Plugins ====="
                     ansible-doc -t lookup -l | grep amazon
 
-                    # 4. تشغيل الـ Playbook
                     ansible-playbook -i ansible/stage.inventory ansible/site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
