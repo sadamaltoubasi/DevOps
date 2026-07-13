@@ -39,7 +39,10 @@ pipeline {
                     
                     # تأمين ملف مفتاح الـ SSH
                     chmod 400 \${SSH_KEY}
-                    
+
+                    apk add --no-cache python3 py3-pip py3-boto3 py3-botocore
+                    ansible-galaxy collection install -r ansible/requirements.yml --collections-path \${WORKSPACE}/.ansible/collections --force
+
                     ansible-playbook -i ansible/prod.inventory ansible/prod-site.yml \
                     --user=\${SSH_USER} \
                     --private-key=\${SSH_KEY} \
