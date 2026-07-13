@@ -62,3 +62,12 @@
         network_mode: vprof-net
         ports:
           - "11211:11211"
+      notify: Restart memcached container
+   
+  handlers:
+    - name: Restart memcached container
+      community.docker.docker_container:
+        name: mc01
+        image: memcached:1.6-alpine
+        state: started
+        restart: true

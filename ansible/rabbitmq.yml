@@ -55,6 +55,13 @@
         name: vprof-net
         state: present
 
+
+    - name: Read RabbitMQ configuration from AWS SSM
+      ansible.builtin.set_fact:
+        rmq_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_user', region='us-east-1') }}"
+        rmq_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_pass', region='us-east-1') }}"
+
+
     - name: Run RabbitMQ Management Container
       community.docker.docker_container:
         name: rmq01
@@ -66,5 +73,22 @@
           - "5672:5672"
           - "15672:15672"
         env:
-          RABBITMQ_DEFAULT_USER: "admin"
-          RABBITMQ_DEFAULT_PASS: "admin123"
+          RABBITMQ_DEFAULT_USER: "{{ rmq_user }}"
+          RABBITMQ_DEFAULT_PASS: "{{ rmq_pass }}"
+      notify: Restart rabbitmq container
+  
+  handlers:
+    - name: Restart rabbitmq container
+      community.docker.docker_container:
+        name: rmq01
+        image: rabbitmq:3-management-alpine
+        state: started
+        restart: true
+        network_mode: vprof-net
+        ports:
+          - "5672:5672"
+          - "15672:15672"
+        env:
+          RABBITMQ_DEFAULT_USER: "{{ rmq_user }}"
+          RABBITMQ_DEFAULT_PASS: "{{ rmq_pass }}"
+

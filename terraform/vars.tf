@@ -62,3 +62,13 @@ variable "dbname" {
   default = "accounts"
 
 }
+
+variable "rmq_user" {
+  default = "admin"
+
+}
+
+variable "rmq_pass" {
+  default = "admin123"
+}
+

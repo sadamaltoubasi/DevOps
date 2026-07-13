@@ -1,10 +1,7 @@
 [all:vars]
 
-ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -W %h:%p -q ubuntu@34.205.64.93"'
-
-[dbsrvgrp]
-10.0.2.88
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -W %h:%p -q ubuntu@34.227.20.80"'
 
 
 [appsrvgrp]
-10.0.2.88
+10.0.2.127

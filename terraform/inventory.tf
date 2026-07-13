@@ -5,9 +5,6 @@ resource "local_file" "ansible_stage_inventory" {
 
 ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -W %h:%p -q ubuntu@${aws_instance.bastion-host.public_ip}"'
 
-[dbsrvgrp]
-${aws_instance.app_server.private_ip}
-
 [rmqsrvgrp]
 ${aws_instance.rabbitmq_server.private_ip}
 
@@ -26,9 +23,6 @@ resource "local_file" "ansible_prod_inventory" {
 [all:vars]
 
 ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -W %h:%p -q ubuntu@${aws_instance.bastion-host.public_ip}"'
-
-[dbsrvgrp]
-${aws_instance.prod_server.private_ip}
 
 
 [appsrvgrp]

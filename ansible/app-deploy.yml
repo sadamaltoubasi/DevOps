@@ -53,7 +53,6 @@
         state: present
 
   #-----------------------------------------------------------------------------------------------------------
-  
 
     - name: Ensure aws-cli is installed
       apt:
@@ -63,18 +62,53 @@
         
     - name: Login to AWS ECR
       shell: "aws ecr get-login-password --region {{ aws_region }} | docker login --username AWS --password-stdin {{ ecr_registry }}"
+      changed_when: false
 
     - name: Pull Docker Image
       shell: "docker pull {{ ecr_registry }}/{{ ecr_repo_name }}:{{ image_tag }}"
+      # نطلق الـ Handler فقط إذا تم سحب صورة جديدة أو تحديث جديد فعلياً
+      notify: Recreate application container 
 
-    - name: Remove Old Container if exists
-      shell: "docker rm -f vprofile-app"
-      failed_when: false # حتى لا يفشل الـ Playbook إذا لم يكن هناك حاوية قديمة تعمل
+    - name: Read DB configuration from AWS SSM
+      ansible.builtin.set_fact:
+        db_url: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_url', region='us-east-1') }}"
+        db_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_user', region='us-east-1') }}"
+        db_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/db_pass', region='us-east-1') }}"
+        rmq_user: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_user', region='us-east-1') }}"
+        rmq_pass: "{{ lookup('amazon.aws.aws_ssm', '/vprofile/staging/rmq_pass', region='us-east-1') }}"
 
-    - name: Run New Container
-      shell: >
-        docker run -d --name vprofile-app 
-        --network vprof-net
-        --restart always 
-        -p 8080:8080 
-        {{ ecr_registry }}/{{ ecr_repo_name }}:{{ image_tag }}
+
+    - name: Run Application Docker Container with Env Variables
+      community.docker.docker_container:
+        name: vprofile-app
+        image: "{{ ecr_registry }}/{{ ecr_repo_name }}:{{ image_tag }}"
+        state: started
+        restart_policy: unless-stopped
+        network_mode: vprof-net
+        ports:
+          - "8080:8080"
+        env:
+          DB_URL: "{{ db_url }}"
+          DB_USER: "{{ db_user }}"
+          DB_PASS: "{{ db_pass }}"
+          RMQ_USER: "{{ rmq_user }}"
+          RMQ_PASS: "{{ rmq_pass }}"
+
+#======= الـ handlers هنا تبدأ من أول السطر بدون مسافات زائدة وتوازي قسم الـ tasks =======
+  handlers:
+    - name: Recreate application container
+      community.docker.docker_container:
+        name: vprofile-app
+        image: "{{ ecr_registry }}/{{ ecr_repo_name }}:{{ image_tag }}"
+        state: started
+        recreate: yes 
+        restart_policy: unless-stopped
+        network_mode: vprof-net
+        ports:
+          - "8080:8080"
+        env:
+          DB_URL: "{{ db_url }}"
+          DB_USER: "{{ db_user }}"
+          DB_PASS: "{{ db_pass }}"
+          RMQ_USER: "{{ rmq_user }}"
+          RMQ_PASS: "{{ rmq_pass }}"

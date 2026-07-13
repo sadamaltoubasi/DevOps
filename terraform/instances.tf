@@ -107,21 +107,3 @@ resource "aws_instance" "prod_server" {
     Terraform   = "true"
   }
 }
-
-
-resource "aws_instance" "bastion-host" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  subnet_id                   = module.vpc.public_subnets[1]
-  vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
-  key_name                    = aws_key_pair.vprotest.key_name
-  associate_public_ip_address = true
-
-
-  tags = {
-    Name        = "bastion-host"
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
