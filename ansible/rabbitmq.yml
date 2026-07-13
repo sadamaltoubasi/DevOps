@@ -73,8 +73,8 @@
           - "5672:5672"
           - "15672:15672"
         env:
-          RABBITMQ_DEFAULT_USER: "{{ rmq_user }}"
-          RABBITMQ_DEFAULT_PASS: "{{ rmq_pass }}"
+          RABBITMQ_DEFAULT_USER: "admin"
+          RABBITMQ_DEFAULT_PASS: "admin123"
       notify: Restart rabbitmq container
   
   handlers:
