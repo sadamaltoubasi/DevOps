@@ -50,7 +50,7 @@ resource "aws_iam_instance_profile" "app_server_profile" {
 
 resource "aws_instance" "memcached_server" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.medium"
   subnet_id              = module.vpc.private_subnets[0]
   vpc_security_group_ids = [aws_security_group.backend_sg.id]
   key_name               = aws_key_pair.vprotest.key_name
@@ -64,7 +64,7 @@ resource "aws_instance" "memcached_server" {
 
 resource "aws_instance" "rabbitmq_server" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.medium"
   subnet_id              = module.vpc.private_subnets[0]
   vpc_security_group_ids = [aws_security_group.backend_sg.id]
   key_name               = aws_key_pair.vprotest.key_name
