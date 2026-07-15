@@ -9,7 +9,8 @@ module "vpc" {
   public_subnets  = [var.PublicSubnet1, var.PublicSubnet2, var.PublicSubnet3]
 
   enable_nat_gateway      = true
-  one_nat_gateway_per_az  = true
+  # one_nat_gateway_per_az  = true
+  single_nat_gateway      = true
   enable_dns_hostnames    = true
   enable_dns_support      = true
   map_public_ip_on_launch = true
