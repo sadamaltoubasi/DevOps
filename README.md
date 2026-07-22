@@ -1,10 +1,14 @@
 # 🚀 Advanced Cloud Infrastructure & GitOps Engineering Portfolio
-#
+
 ## 👨‍💻 About Me
-A results-driven **DevOps Engineer** specializing in designing and orchestrating high-availability cloud infrastructure, secure cloud-native architectures, and robust automation frameworks. 
 
-This portfolio demonstrates an elite capability to operate across **hybrid ecosystems (Multi-CI/CD Engines, Multi-IaC Workflows, and Advanced Container Orchestration)**. Every architectural blueprint featured here is engineered to production-grade standards, prioritizing strict quality gates, zero-trust cloud security (DevSecOps), and absolute infrastructure repeatability.
+> **Hands-On DevOps & DevSecOps Engineer** dedicated to building resilient cloud infrastructure, automated CI/CD pipelines, and secure cloud-native environments.
 
+This portfolio showcases production-grade architectures and end-to-end automation projects engineered using **Multi-CI/CD Engines** *(GitLab CI, GitHub Actions, Jenkins)*, **Modular IaC** *(Terraform)*, and **Container Orchestration** *(Kubernetes/EKS)*. 
+
+Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scalability**, and **infrastructure repeatability**, every project reflects a deep, practical application of modern Cloud & DevSecOps standards.
+
+---
 ---
 
 ## 🛠️ Core Technology Matrix
