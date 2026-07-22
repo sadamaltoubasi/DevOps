@@ -39,7 +39,7 @@ This portfolio demonstrates an elite capability to operate across **hybrid ecosy
 * **The Solution:** Formulated a declarative, matrix-based GitHub Actions workflow. Every code push initiates automated Maven testing and remote code quality scans inside SonarCloud. Validated code paths automatically trigger secure Docker multi-stage builds, pushing immutable container images into Amazon ECR registry buckets. The lifecycle concludes by executing progressive task definition adjustments across active Amazon ECS container tasks secured behind an Elastic Load Balancer (ELB).
 * **Tech Stack:** GitHub Actions, Maven, SonarCloud, Docker, Amazon ECR, Amazon ECS, ELB.
 * **Architecture Blueprint:**
-  ![GitHub Actions ECS Pipeline](./images/GitOps-with Github-Actions.png)
+  ![GitHub Actions ECS Pipeline](./images/GitOps-with-Github-Actions.png)
 
 ### 4️⃣ Serverless Cloud-Native CI/CD Pipeline (AWS CodePipeline)
 * **The Challenge:** Abstracting pipeline computing infrastructure entirely using AWS native serverless options while maintaining high-velocity compilation and delivery.
