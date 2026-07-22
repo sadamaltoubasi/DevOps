@@ -32,21 +32,21 @@ This portfolio demonstrates an elite capability to operate across **hybrid ecosy
 * **The Solution:** Built a unified provisioning engine. Terraform automates the delivery of a multi-AZ `vpro-vpc` managing scalable compute tiers inside Auto Scaling Groups backed by AWS RDS, RabbitMQ, and Memcached. Upon completion, a multi-stage Jenkins pipeline triggers an ephemeral Dockerized Ansible agent (`alpine/ansible`) to automatically establish secure SSH pipelines and apply precise configuration roles across separated staging and production workloads.
 * **Tech Stack:** Jenkins, Terraform, Ansible, AWS VPC, Amazon RDS, Auto Scaling, Amazon ECR, SonarCloud, Slack.
 * **Architecture Blueprint:**
-  ![Jenkins Ansible Enterprise Framework](./images/Continuous%20Delivery%20And%20Configuration%20Management%20Jenkins%2C%20Ansible%20plus%20Terraform.png)
+  ![Jenkins Ansible Enterprise Framework](./images/JenkAns.png)
 
 ### 3️⃣ Multi-Track GitOps Application Delivery Lifecycle (GitHub Actions & ECS)
 * **The Challenge:** Constructing a unified, low-latency workflow natively integrated into GitHub for rapid testing, security analysis, and container service deployments.
 * **The Solution:** Formulated a declarative, matrix-based GitHub Actions workflow. Every code push initiates automated Maven testing and remote code quality scans inside SonarCloud. Validated code paths automatically trigger secure Docker multi-stage builds, pushing immutable container images into Amazon ECR registry buckets. The lifecycle concludes by executing progressive task definition adjustments across active Amazon ECS container tasks secured behind an Elastic Load Balancer (ELB).
 * **Tech Stack:** GitHub Actions, Maven, SonarCloud, Docker, Amazon ECR, Amazon ECS, ELB.
 * **Architecture Blueprint:**
-  ![GitHub Actions ECS Pipeline](./images/Github%20Actions%20for%20CICD.png)
+  ![GitHub Actions ECS Pipeline](./images/GitOps-with Github-Actions.png)
 
 ### 4️⃣ Serverless Cloud-Native CI/CD Pipeline (AWS CodePipeline)
 * **The Challenge:** Abstracting pipeline computing infrastructure entirely using AWS native serverless options while maintaining high-velocity compilation and delivery.
 * **The Solution:** Engineered an entirely serverless continuous delivery workflow on AWS. Triggered dynamically by source updates inside Bitbucket, AWS CodePipeline orchestrates isolated AWS CodeBuild execution nodes. These nodes pull specialized base container images from Amazon ECR to perform code compilation, dependency caching, and Sonar analysis, transferring artifacts securely via Amazon S3 to AWS CodeDeploy for automated rolling target updates.
 * **Tech Stack:** AWS CodePipeline, CodeBuild, CodeDeploy, Amazon ECR, Amazon S3, Bitbucket.
 * **Architecture Blueprint:**
-  ![AWS Native CodePipeline](./images/Continuous%20Delivery%20on%20AWS%20Cloud%20Java%20Application.png)
+  ![AWS Native CodePipeline](./images/Continuous-Delivery-on-AWS-Cloud-Java-Application.png)
 
 ---
 
