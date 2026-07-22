@@ -25,7 +25,7 @@ This portfolio demonstrates an elite capability to operate across **hybrid ecosy
 * **The Solution:** Engineered a sophisticated dual-track GitOps pipeline within GitLab CI. The infrastructure pipeline utilizes Terraform with static security analysis via `tfsec` to provision an enterprise-grade AWS VPC and Amazon EKS cluster. The application delivery pipeline leverages OpenID Connect (OIDC) via AWS STS for temporary token exchange, runs automated unit tests, executes container vulnerability scans using `Trivy`, and automates application rollout into isolated worker node pools using Helm Charts.
 * **Tech Stack:** GitLab CI/CD, Terraform, tfsec, Trivy, Amazon EKS, Helm, AWS ECR, OIDC.
 * **Architecture Blueprint:**
-  ![GitLab CI EKS GitOps Pipeline](./images/GitOps%20with%20Github%20Actions.png)
+  ![GitLab CI EKS GitOps Pipeline](./images/GitOps-with-Gitlab.png)
 
 ### 2️⃣ Unified Enterprise IaC & Configuration Management Framework (Jenkins & Ansible)
 * **The Challenge:** Automating the structural provisioning and configuration execution gap between raw cloud infrastructure and environment node states for staging and production targets.
