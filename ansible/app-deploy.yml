@@ -10,23 +10,18 @@
     image_tag: "{{ image_tag_env | default('latest') }}"
 
   tasks:
-    - name: Gather the package facts
-      ansible.builtin.package_facts:
-        manager: auto
   
     - name: Install prerequisites for Docker
       ansible.builtin.apt:
-        name: "{{ item }}"
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip 
         state: present
         force_apt_get: yes
-      loop:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg
-        - lsb-release
-        - python3-pip 
-      when: item not in ansible_facts.packages
 
     - name: Add Docker GPG apt Key
       ansible.builtin.apt_key:

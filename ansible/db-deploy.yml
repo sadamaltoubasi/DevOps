@@ -17,7 +17,6 @@
           - lsb-release
           - python3-pip 
         state: present
-        update_cache: yes
 
     - name: Add Docker GPG apt Key
       ansible.builtin.apt_key:
@@ -36,7 +35,6 @@
           - docker-ce-cli
           - containerd.io
         state: present
-        update_cache: yes
 
     - name: Install Docker python module
       ansible.builtin.pip:
