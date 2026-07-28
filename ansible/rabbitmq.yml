@@ -14,7 +14,9 @@
           - lsb-release
           - python3-pip 
         state: present
+        force_apt_get: yes
         update_cache: yes
+        cache_valid_time: 3600
 
     - name: Add Docker GPG apt Key
       ansible.builtin.apt_key:
@@ -33,7 +35,6 @@
           - docker-ce-cli
           - containerd.io
         state: present
-        update_cache: yes
 
     - name: Install Docker python module
       ansible.builtin.pip:
@@ -47,7 +48,6 @@
       apt:
         name: python3-docker
         state: present
-        update_cache: yes
       when: ansible_os_family == "Debian"
 
     - name: Ensure docker network 'vprof-net' exists

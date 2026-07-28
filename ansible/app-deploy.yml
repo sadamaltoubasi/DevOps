@@ -21,7 +21,9 @@
           - lsb-release
           - python3-pip 
         state: present
+        force_apt_get: yes
         update_cache: yes
+        cache_valid_time: 3600
 
     - name: Add Docker GPG apt Key
       ansible.builtin.apt_key:
@@ -40,7 +42,6 @@
           - docker-ce-cli
           - containerd.io
         state: present
-        update_cache: yes
 
     - name: Install Docker python module
       ansible.builtin.pip:
@@ -58,7 +59,7 @@
       apt:
         name: awscli
         state: present
-        update_cache: yes
+        force_apt_get: yes
         
     - name: Login to AWS ECR
       shell: "aws ecr get-login-password --region {{ aws_region }} | docker login --username AWS --password-stdin {{ ecr_registry }}"
