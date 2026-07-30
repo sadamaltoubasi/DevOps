@@ -80,9 +80,9 @@ Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scala
 * **Summary:** Building secure, collaborative backend locks for enterprise state management using S3 backends paired with state mapping files.
 * **Blueprint:** `![Architecture](./images/Terraform%20for%20Cloud%20State%20Management%202.png)`
 
-### Multi-Tier Polyglot Microservices Isolation (EMart App)
+### Multi-Tier Polyglot Microservices Isolation (Emart App)
 * **Summary:** Establishing an API Gateway architecture with Nginx to reverse-proxy decoupled multi-stack container ecosystems (Angular, NodeJS, MongoDB, Java).
-* **Blueprint:** `![Architecture](./images/Containerization-of-Java-project-using-Docker-Emart-App.png)`
+* **Blueprint:** ![Architecture](./images/Containerization-of-Java-project-using-Docker-Emart-App.png)
 </details>
 
 <details>
