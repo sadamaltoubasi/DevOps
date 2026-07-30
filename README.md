@@ -82,7 +82,7 @@ Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scala
 
 ### Multi-Tier Polyglot Microservices Isolation (EMart App)
 * **Summary:** Establishing an API Gateway architecture with Nginx to reverse-proxy decoupled multi-stack container ecosystems (Angular, NodeJS, MongoDB, Java).
-* **Blueprint:** `![Architecture](./images/Containerization%20of%20Java%20project%20using%20Docker%20-%20Emart%20App.png)`
+* **Blueprint:** `![Architecture](./images/Containerization-of-Java-project-using-Docker-Emart-App.png)`
 </details>
 
 <details>
