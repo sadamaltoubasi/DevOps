@@ -92,10 +92,6 @@ Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scala
 * **Summary:** Automated CI/CD pipeline and multi-tier Java app deployment on a KOPS-provisioned Kubernetes cluster using Helm. The setup automates code quality checks, container builds, Helm-driven rollouts, and AWS EBS persistent storage management.
 * **Blueprint:** ![Architecture](./images/CICD-for-Containers.png)
 
-### Self-Hosted Enterprise CI Lifecycle (Jenkins & Quality Gates)
-* **Summary:** Orchestrating complete quality gates featuring automated Checkstyle validations, SonarQube quality criteria tracking, and immutable asset artifact pushing to Sonatype Nexus repositories.
-* **Blueprint:** `![Architecture](./images/Continuous%20Integration%20Using%20Jenkins%2C%20Nexus%2C%20Sonarqube%20%26%20Slack.png)`
-
 ### Enterprise Full-Stack Automation via Ansible Roles
 * **Summary:** Eliminating configuration divergence across complex multi-tier infrastructures using modular Ansible Roles and live dynamic AWS inventories.
 * **Blueprint:** `![Architecture](./images/Ansible%20for%20Complete%20Stack%20Setup.jpg)`
