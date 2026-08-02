@@ -90,7 +90,7 @@ Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scala
 
 ### CICD for Containers (Automated Java App Delivery via Jenkins, Docker & Helm on Kubernetes)
 * **Summary:** Automated CI/CD pipeline and multi-tier Java app deployment on a KOPS-provisioned Kubernetes cluster using Helm. The setup automates code quality checks, container builds, Helm-driven rollouts, and AWS EBS persistent storage management.
-* **Blueprint:** `![Architecture](./images/CICD-for-Containers.png)`
+* **Blueprint:** ![Architecture](./images/CICD-for-Containers.png)
 
 ### Self-Hosted Enterprise CI Lifecycle (Jenkins & Quality Gates)
 * **Summary:** Orchestrating complete quality gates featuring automated Checkstyle validations, SonarQube quality criteria tracking, and immutable asset artifact pushing to Sonatype Nexus repositories.
