@@ -88,7 +88,7 @@ Designed with a strict focus on **zero-trust security** *(OIDC, Trivy)*, **scala
 <details>
 <summary>📂 Expand Kubernetes Orchestration & Core Pipelines</summary>
 
-### CICD for Containers (Automated Java App Delivery via Jenkins, Docker & Helm on Kubernetes)
+### CICD for Containers (Automated Java App Delivery via Jenkins, Docker & Helm on K8s via kOps)
 * **Summary:** Automated CI/CD pipeline and multi-tier Java app deployment on a KOPS-provisioned Kubernetes cluster using Helm. The setup automates code quality checks, container builds, Helm-driven rollouts, and AWS EBS persistent storage management.
 * **Blueprint:** ![Architecture](./images/CICD-for-Containers.png)
 
